@@ -28,10 +28,10 @@ import ru.cinimex.connector.FieldInBody;
 import ru.cinimex.connector.Header;
 import ru.cinimex.connector.Message;
 import ru.cinimex.connector.PointInBody;
-import ru.cinimex.data.ClientDataCore;
+import ru.cinimex.data.ClientData;
 import ru.cinimex.data.ClientState;
 import ru.cinimex.data.Field;
-import ru.cinimex.data.LogicForField;
+import ru.cinimex.data.FieldLogic;
 import ru.cinimex.data.TypeCell;
 
 public class View extends JFrame {
@@ -77,7 +77,7 @@ public class View extends JFrame {
 		// hide favicon.
 		startButton = new JButton("Start game");
 		endButton = new JButton("Lose");
-		panelTable = new Panel("Your field", new ClientDataCore(ClientState.NOT_CONNECT)) {
+		panelTable = new Panel("Your field", new ClientData(ClientState.NOT_CONNECT)) {
 			@Override
 			protected void onclickCell(int row, int column) {
 				onclickToField(row, column);
@@ -195,7 +195,7 @@ public class View extends JFrame {
 					controller.connect(url, port);
 					Message msg = new Message(
 							Header.INIT, 
-							new FieldInBody(panelTable.getField().getField()));
+							new FieldInBody(panelTable.getField()));
 					controller.send(msg);
 					panelOpponentTable.setVisible(true);
 					startButton.setEnabled(false);
@@ -348,9 +348,10 @@ public class View extends JFrame {
 		panelTable.setState(ClientState.WAIT);
 		if (body != null && (body instanceof PointInBody)) {
 			log.println("Hit on our ship!");
+			PointInBody point = (PointInBody) body;
 			int x = ((PointInBody) body).getX();
 			int y = ((PointInBody) body).getY();
-			boolean isBigBang = LogicForField.detectBigBang(x, y, panelTable.getField());
+			boolean isBigBang = FieldLogic.detectBigBang(panelTable.getField(), point);
 			panelTable.setCell(x, y, TypeCell.STRAKE);
 			if (isBigBang) {
 				paintPaddedShip(x, y, panelTable);

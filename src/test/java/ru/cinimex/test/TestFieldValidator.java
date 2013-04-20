@@ -5,7 +5,7 @@
 package ru.cinimex.test;
 
 import ru.cinimex.data.Field;
-import ru.cinimex.data.LogicForField;
+import ru.cinimex.data.FieldLogic;
 
 public class TestFieldValidator {
 	public static void main(String[] args) {
@@ -24,6 +24,6 @@ public class TestFieldValidator {
 		Field field = new Field();
 		field.setField(f);
 //		System.out.println(field.isBigBang(0, 3));
-		System.out.println(LogicForField.isValidInitField(field));
+		System.out.println(FieldLogic.isValidInitField(field));
 	}
 }

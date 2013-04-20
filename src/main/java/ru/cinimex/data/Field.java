@@ -4,11 +4,14 @@
  */
 package ru.cinimex.data;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
-public class Field implements Cloneable {
-	public final int HEIGHT = 10;
-	public final int WIDTH = 10;
+public class Field implements Cloneable, Serializable {
+	private static final long serialVersionUID = 2932346134737082459L;
+	public final int length = 10;
+	public final int HEIGHT = length;
+	public final int WIDTH = length;
 	private int[][] field = new int[HEIGHT][WIDTH];
 	
 	public Field() {
@@ -35,7 +38,7 @@ public class Field implements Cloneable {
 		}
 		this.field = field;
 	}
-	
+		
 	public void setField(int[][] field) {
 		this.field = field;
 	}
@@ -63,12 +66,12 @@ public class Field implements Cloneable {
 		}
 	}
 	
-	public boolean isStrike(int x, int y) {
+	/*public boolean isStrike(int x, int y) {
 		if (field[x][y] == TypeCell.SHIP.ordinal()) {
 			return true;
 		}
 		return false;
-	}
+	}*/
 	
 	public void setCell(int x, int y, TypeCell type) {
 		field[x][y] = type.ordinal();

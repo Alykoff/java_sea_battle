@@ -42,12 +42,6 @@ public abstract class CellEditor extends DefaultCellEditor {
 			public void mouseExited(MouseEvent paramMouseEvent) {}			
 			public void mouseEntered(MouseEvent paramMouseEvent) {}
 		});
-//	     button.addActionListener(new ActionListener() {
-//	    	 public void actionPerformed(ActionEvent e) {
-//	    		 onclickAction();
-//	    		 fireEditingStopped();
-//	    	 }
-//	     });
 	}
 	
 	@Override

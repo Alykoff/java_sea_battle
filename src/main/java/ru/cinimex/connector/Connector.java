@@ -31,27 +31,11 @@ public class Connector {
 		System.out.println(msg.toString());
 		OutputStream outputStream = null;
 		ObjectOutputStream objOutputStream = null;
-		try {
-			outputStream = socket.getOutputStream();
-			objOutputStream = new ObjectOutputStream(outputStream);
-			objOutputStream.writeObject(msg);
-			System.out.println("===================================");
-		} finally {
-//			if (objOutputStream != null) {
-//				try {
-//					objOutputStream.close();
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-//			}
-//			if (outputStream != null) {
-//				try {
-//					outputStream.close();
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-//			}
-		}
+		outputStream = socket.getOutputStream();
+		objOutputStream = new ObjectOutputStream(outputStream);
+		objOutputStream.writeObject(msg);
+		System.out.println("===================================");
+
 	}
 	
 	public Message recieve() throws IOException, ClassNotFoundException, ClassCastException {
@@ -59,30 +43,13 @@ public class Connector {
 		System.out.println(new java.util.Date().toString());
 		InputStream inputStream = null;
 		ObjectInputStream objInputStream = null;
-		try {
-			System.out.println(socket.isClosed() + " " + new java.util.Date().toString());
-			inputStream = socket.getInputStream();
-			objInputStream = new ObjectInputStream(inputStream);
-			Message msg = (Message) objInputStream.readObject();
-			System.out.println(msg.toString());
-			System.out.println("=============================================");
-			return msg;
-		} finally {
-//			if (objInputStream != null) {
-//				try {
-//					objInputStream.close();
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-//			}
-//			if (inputStream != null) {
-//				try {
-//					inputStream.close();
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-//			}
-		}
+		System.out.println(socket.isClosed() + " " + new java.util.Date().toString());
+		inputStream = socket.getInputStream();
+		objInputStream = new ObjectInputStream(inputStream);
+		Message msg = (Message) objInputStream.readObject();
+		System.out.println(msg.toString());
+		System.out.println("=============================================");
+		return msg;		
 	}
 	
 	public void close() {

@@ -6,7 +6,7 @@ package ru.cinimex.client.view;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
-import ru.cinimex.data.ClientDataCore;
+import ru.cinimex.data.ClientData;
 import ru.cinimex.data.ClientState;
 import ru.cinimex.data.Field;
 import ru.cinimex.data.TypeCell;
@@ -30,7 +30,7 @@ public abstract class Panel extends JPanel {
 		add(table);
 	}
 	
-	public Panel(String panelName, ClientDataCore clientData) {
+	public Panel(String panelName, ClientData clientData) {
 		this(panelName);
 		this.model = new TableModel(clientData);
 	}

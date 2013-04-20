@@ -6,20 +6,20 @@ package ru.cinimex.client.view;
 
 import javax.swing.table.AbstractTableModel;
 
-import ru.cinimex.data.ClientDataCore;
+import ru.cinimex.data.ClientData;
 import ru.cinimex.data.ClientState;
 import ru.cinimex.data.Field;
 
 public class TableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 4164115690980271575L;
-	private ClientDataCore data;
+	private ClientData data;
 	private boolean editingFlag = true;
 	
 	public TableModel() {
-		data = new ClientDataCore(ClientState.NOT_CONNECT);
+		data = new ClientData(ClientState.NOT_CONNECT);
 	}
 	
-	public TableModel(ClientDataCore data) {
+	public TableModel(ClientData data) {
 		if (data == null) {
 			throw new NullPointerException();
 		}

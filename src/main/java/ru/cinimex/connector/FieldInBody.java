@@ -7,36 +7,31 @@ package ru.cinimex.connector;
 import java.io.Serializable;
 
 import ru.cinimex.data.Field;
+import ru.cinimex.data.TypeCell;
 
 public class FieldInBody extends BodyMessage implements Serializable {
 	private static final long serialVersionUID = -8339379564574068914L;
-	public static int length = 10;
-	private int[][] field = new int[length][length];
+	private Field field;
 	
 	public FieldInBody() {}
 	
-	public FieldInBody(int[][] field) {
-		if (field.length != length) {
-			throw new RuntimeException();
-		}
-		for (int i = 0; i < field.length; i++) {
-			if (field[i].length != length) {
-				throw new RuntimeException();
-			}
+	public FieldInBody(Field field) {
+		if (field == null) {
+			throw new IllegalArgumentException();
 		}
 		this.field = field;
 	}
 
-	public void setField(int[][] field) {
-		this.field = field;
-	}
+//	public void setField(Field field) {
+//		this.field = field;
+//	}
 
-	public int[][] getField() {
+	public Field getField() {
 		return field;
 	}
 	
 	@Override
 	public String toString() {
-		return new Field(field).toString();
+		return field.toString();
 	}
 }
