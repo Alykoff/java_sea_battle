@@ -13,14 +13,16 @@ import ru.cinimex.data.TypeCell;
 
 public abstract class Panel extends JPanel {
 	private static final long serialVersionUID = -4987709731476037735L;
-	private TableModel model;
+//	private TableModel model;
 	private Table table;
+	private final int HEIGHT_CELL = 20;
+	private final int WIDTH_CELL = 20;
 	
 	@SuppressWarnings("serial")
 	public Panel(String panelName) {
 		super();
-		this.model = new TableModel();
-		this.table = new Table(model, 20, 20) {
+		TableModel model = new TableModel();
+		this.table = new Table(model, WIDTH_CELL, HEIGHT_CELL) {
 			@Override
 			protected void onclickToCell(int row, int column) {
 				onclickCell(row, column);
@@ -30,11 +32,6 @@ public abstract class Panel extends JPanel {
 		add(table);
 	}
 	
-	public Panel(String panelName, ClientData clientData) {
-		this(panelName);
-		this.model = new TableModel(clientData);
-	}
-
 	public Field getField() {
 		Field field = new Field();
 		int[][] elements = new int[field.HEIGHT][field.WIDTH];
@@ -64,14 +61,14 @@ public abstract class Panel extends JPanel {
 			}
 		}
 	}
-	
-	public ClientState getState() {
-		return model.getState();
-	}
-	
-	public void setState(ClientState state) {
-		model.setState(state);
-	}
+//	
+//	public ClientState getState() {
+//		return model.getState();
+//	}
+//	
+//	public void setState(ClientState state) {
+//		model.setState(state);
+//	}
 	
 	public void setCell(int row, int column, TypeCell type) {
 		table.getModel().setValueAt(type.ordinal(), row, column);
@@ -86,10 +83,10 @@ public abstract class Panel extends JPanel {
 		Object cell = table.getModel().getValueAt(row, column);
 		return (Integer) cell;
 	}
-	
-	public int getId() {
-		return model.getId();
-	}
+//	
+//	public int getId() {
+//		return model.getId();
+//	}
 	
 	public void update() {
 		repaint();

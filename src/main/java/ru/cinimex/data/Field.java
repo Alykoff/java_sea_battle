@@ -66,13 +66,6 @@ public class Field implements Cloneable, Serializable {
 		}
 	}
 	
-	/*public boolean isStrike(int x, int y) {
-		if (field[x][y] == TypeCell.SHIP.ordinal()) {
-			return true;
-		}
-		return false;
-	}*/
-	
 	public void setCell(int x, int y, TypeCell type) {
 		field[x][y] = type.ordinal();
 	}

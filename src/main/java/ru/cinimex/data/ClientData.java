@@ -13,7 +13,9 @@ public class ClientData {
 	protected long dateLastMsg;
 	
 	public ClientData(ClientState state) {
-		if (state == null) throw new RuntimeException();
+		if (state == null) {
+			throw new RuntimeException();
+		}
 		this.setState(state);
 		this.setId(id);
 		setDateLastMsg(new Date().getTime());
@@ -21,7 +23,9 @@ public class ClientData {
 	
 	public ClientData(ClientState state, Field field) {
 		this(state);
-		if (field == null) throw new RuntimeException();
+		if (field == null) {
+			throw new RuntimeException();
+		}
 		this.field = field;
 	}
 

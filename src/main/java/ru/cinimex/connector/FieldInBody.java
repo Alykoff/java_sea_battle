@@ -5,9 +5,7 @@
 package ru.cinimex.connector;
 
 import java.io.Serializable;
-
 import ru.cinimex.data.Field;
-import ru.cinimex.data.TypeCell;
 
 public class FieldInBody extends BodyMessage implements Serializable {
 	private static final long serialVersionUID = -8339379564574068914L;
@@ -21,11 +19,7 @@ public class FieldInBody extends BodyMessage implements Serializable {
 		}
 		this.field = field;
 	}
-
-//	public void setField(Field field) {
-//		this.field = field;
-//	}
-
+	
 	public Field getField() {
 		return field;
 	}

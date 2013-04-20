@@ -19,13 +19,12 @@ public abstract class CellEditor extends DefaultCellEditor {
 	protected int column;
 	
 	public CellEditor(JCheckBox checkBox) {
-		 super(checkBox);
-		 button = new JButton();
-	     button.setOpaque(false);
-	     button.setVisible(false);
-	     button.addMouseListener(new MouseListener() {
-			
-			public void mouseReleased(MouseEvent paramMouseEvent) {
+		super(checkBox);
+		button = new JButton();
+	  button.setOpaque(false);
+	  button.setVisible(false);
+	  button.addMouseListener(new MouseListener() {
+	  	public void mouseReleased(MouseEvent paramMouseEvent) {
 	    		 onclickAction();
 	    		 fireEditingStopped();				
 			}

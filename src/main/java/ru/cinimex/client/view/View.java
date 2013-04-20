@@ -40,7 +40,12 @@ public class View extends JFrame {
 	public static final int DEFAULT_WIDTH = 500;
 	public static final String DEFAULT_TITLE = "Sea battle";	
 	protected static final String DEFAULT_PORT = "9000";
-	protected static final String DEFAULT_URL = "192.168.56.1";
+	protected static final String DEFAULT_URL = "127.0.0.1";
+	protected String TITLE_START_BUTTON = "Start game";
+	protected String TITLE_LOSE_BUTTON = "Lose";
+	protected String TITLE_OUR_FIELD_PANEL = "Your field";
+	protected String TITLE_OPPONENT_FIELD_PANEL = "Opponent field";
+	
 	protected static final int[][] DEFAULT_FIELD = new int[][] {
 		new int[] {3, 3, 3, 3, 0, 3, 3, 3, 0, 0},
 		new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -53,15 +58,16 @@ public class View extends JFrame {
 		new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 		new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 	};
-	protected LogComponent log;
 	protected ClientController controller;
-	protected Panel panelOpponentTable;
+	protected boolean interrupt = false;
+	protected ClientData data;
+	protected PointInBody lastStroke;
+
+	protected LogComponent log;
 	protected Panel panelTable;
+	protected Panel panelOpponentTable;
 	protected JButton startButton;
 	protected JButton endButton;
-	protected PointInBody lastStroke;
-	protected boolean interrupt = false;
-		
 	
 	public static void main(String[] args) {
 		new View();
@@ -69,15 +75,17 @@ public class View extends JFrame {
 	
 	@SuppressWarnings("serial")
 	public View() {
-		super();
-		makePretty();
-		log = new LogComponent();
+		setLookAndFeel();
 		setTitle(DEFAULT_TITLE);
 		setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-		// hide favicon.
-		startButton = new JButton("Start game");
-		endButton = new JButton("Lose");
-		panelTable = new Panel("Your field", new ClientData(ClientState.NOT_CONNECT)) {
+		hideFavicone();
+		log = new LogComponent();
+		data = new ClientData(ClientState.NOT_CONNECT);
+		controller = new ClientController();
+		startButton = new JButton(TITLE_START_BUTTON);
+		endButton = new JButton(TITLE_LOSE_BUTTON);
+		
+		panelTable = new Panel(TITLE_OUR_FIELD_PANEL) {
 			@Override
 			protected void onclickCell(int row, int column) {
 				onclickToField(row, column);
@@ -85,7 +93,7 @@ public class View extends JFrame {
 		};
 		panelTable.setField(DEFAULT_FIELD);// TODO test.
 
-		panelOpponentTable = new Panel("Opponent field") {
+		panelOpponentTable = new Panel(TITLE_OPPONENT_FIELD_PANEL) {
 			private static final long serialVersionUID = -5972736539712850752L;
 			@Override
 			protected void onclickCell(int row, int column) {
@@ -93,19 +101,22 @@ public class View extends JFrame {
 			}
 		};
 		panelOpponentTable.setVisible(false);
-		controller = new ClientController();
-		Image icon = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB_PRE);
-		setIconImage(icon);
-		//
+
+		addComponents();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		locationInCenterMonitor(this);
 		setResizable(false);
-		addComponents();
 		setVisible(true);
 	}
 	
+	protected void  hideFavicone() {
+		final int IMAGE_WIDTH = 1;
+		final int IMAGE_HEIGHT = 1;
+		Image icon = new BufferedImage(IMAGE_WIDTH, IMAGE_HEIGHT, BufferedImage.TYPE_INT_ARGB_PRE);
+		setIconImage(icon);
+	}
 	
-	protected void makePretty() {
+	protected void setLookAndFeel() {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException e1) {
@@ -201,7 +212,7 @@ public class View extends JFrame {
 					startButton.setEnabled(false);
 					endButton.setEnabled(true);
 					log.println("Starting game...\n");
-					panelTable.setState(ClientState.WAIT);
+					data.setState(ClientState.WAIT);
 					processingGame();
 				}
 			}).start();
@@ -252,7 +263,7 @@ public class View extends JFrame {
 	}
 	
 	protected void onclickToField(int row, int column) {
-		if (!panelTable.getState().equals(ClientState.NOT_CONNECT)) {
+		if (!data.equals(ClientState.NOT_CONNECT)) {
 			return;
 		}
 		int cellCode = panelTable.getField().getCell(row, column);
@@ -265,9 +276,9 @@ public class View extends JFrame {
 	}
 	
 	protected void onclickToOpponentField(int row, int column) {
-		if (panelTable.getState().equals(ClientState.NOT_CONNECT) ||
-				panelTable.getState().equals(ClientState.WAIT) ||
-				panelTable.getState().equals(ClientState.WAIT_STROKE) ||
+		if (data.equals(ClientState.NOT_CONNECT) ||
+				data.equals(ClientState.WAIT) ||
+				data.equals(ClientState.WAIT_STROKE) ||
 				panelOpponentTable.getCell(row, column) != TypeCell.WATER.ordinal()) {
 			return;
 		}
@@ -278,7 +289,7 @@ public class View extends JFrame {
 	
 	protected void endGame() {
 		log.println("Ending game...");
-		panelTable.setState(ClientState.NOT_CONNECT);
+		data.setState(ClientState.NOT_CONNECT);
 		panelOpponentTable.setVisible(false);
 		panelOpponentTable.cleanField();
 		panelTable.cleanField();
@@ -345,7 +356,7 @@ public class View extends JFrame {
 	
 	protected void reactionOnStrokeTabu(BodyMessage body) {
 		log.println("Please wait for the opponent's turn.");
-		panelTable.setState(ClientState.WAIT);
+		data.setState(ClientState.WAIT);
 		if (body != null && (body instanceof PointInBody)) {
 			log.println("Hit on our ship!");
 			PointInBody point = (PointInBody) body;
@@ -391,7 +402,7 @@ public class View extends JFrame {
 	}
 
 	private void waitAndReactionToStroke() {
-		panelTable.setState(ClientState.STROKE);
+		data.setState(ClientState.STROKE);
 		long beginTime = new Date().getTime();
 		long maxTimeStroke = 30000L;
 		lastStroke = null;
@@ -407,7 +418,7 @@ public class View extends JFrame {
 				e.printStackTrace();
 			}
 		}
-		panelTable.setState(ClientState.WAIT); 
+		data.setState(ClientState.WAIT); 
 		try {
 			controller.send(
 				new Message(Header.STROKE, lastStroke));
