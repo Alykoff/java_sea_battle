@@ -6,14 +6,13 @@ package ru.cinimex.client.view;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
-import ru.cinimex.data.ClientData;
-import ru.cinimex.data.ClientState;
+
+import ru.cinimex.connector.PointInBody;
 import ru.cinimex.data.Field;
 import ru.cinimex.data.TypeCell;
 
 public abstract class Panel extends JPanel {
 	private static final long serialVersionUID = -4987709731476037735L;
-//	private TableModel model;
 	private Table table;
 	private final int HEIGHT_CELL = 20;
 	private final int WIDTH_CELL = 20;
@@ -25,7 +24,8 @@ public abstract class Panel extends JPanel {
 		this.table = new Table(model, WIDTH_CELL, HEIGHT_CELL) {
 			@Override
 			protected void onclickToCell(int row, int column) {
-				onclickCell(row, column);
+				PointInBody point = new PointInBody(row, column);
+				onclickCell(point);
 			}			
 		};
 		setBorder(BorderFactory.createTitledBorder(panelName));
@@ -61,14 +61,6 @@ public abstract class Panel extends JPanel {
 			}
 		}
 	}
-//	
-//	public ClientState getState() {
-//		return model.getState();
-//	}
-//	
-//	public void setState(ClientState state) {
-//		model.setState(state);
-//	}
 	
 	public void setCell(int row, int column, TypeCell type) {
 		table.getModel().setValueAt(type.ordinal(), row, column);
@@ -79,19 +71,35 @@ public abstract class Panel extends JPanel {
 		table.getModel().setValueAt(type, row, column);
 	}
 	
+	public void setCell(PointInBody point, TypeCell type) {
+		if (point == null || type == null) {
+			throw new NullPointerException();
+		}
+		int x = point.getX();
+		int y = point.getY();
+		table.getModel().setValueAt(type.ordinal(), x, y);
+		table.repaint();
+	}
+	
 	public int getCell(int row, int column) {
 		Object cell = table.getModel().getValueAt(row, column);
 		return (Integer) cell;
 	}
-//	
-//	public int getId() {
-//		return model.getId();
-//	}
+	
+	public int getCell(PointInBody point) {
+		if (point == null) {
+			throw new NullPointerException();
+		}
+		int x = point.getX();
+		int y = point.getY();
+		Object cell = table.getModel().getValueAt(x, y);
+		return (Integer) cell;
+	}
 	
 	public void update() {
 		repaint();
 	}
 	
-	protected abstract void onclickCell(int row, int column);
+	protected abstract void onclickCell(PointInBody point);
 	
 }

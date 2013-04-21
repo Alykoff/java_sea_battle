@@ -20,7 +20,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import ru.cinimex.client.view.View;
 import ru.cinimex.client.view.LogComponent;
 
 public class TestFrame extends JFrame {
@@ -44,10 +43,6 @@ public class TestFrame extends JFrame {
 		setResizable(false);
 		addComponents();
 		setVisible(true);
-	}
-	
-	public static void main(String[] args) {
-		new View();
 	}
 	
 	protected void makePretty() {

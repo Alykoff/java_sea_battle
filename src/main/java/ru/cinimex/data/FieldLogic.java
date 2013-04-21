@@ -16,7 +16,7 @@ public class FieldLogic {
 	private static int notCountedThreeCellShips = 2;
 	private static int notCountedFourCellShips = 1;
 	private static ArrayList<Point2D.Float> shipsCells = 
-				new ArrayList<Point2D.Float>(NUM_OF_SHIP_CELL);
+												new ArrayList<Point2D.Float>(NUM_OF_SHIP_CELL);
 	
 	public static boolean isValidInitField(Field field) {
 		return validateForType(TypeCell.SHIP, field);

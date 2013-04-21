@@ -47,11 +47,11 @@
  				<manifest>
  					<addClasspath>true</addClasspath>
  					
- 					<mainClass>ru.cinimex.client.view.View</mainClass>
+ 					<mainClass>ru.cinimex.client.controller.ClientController</mainClass>
 					  
-					<!--    
+					 <!--  
 					 <mainClass>ru.cinimex.server.ServerController</mainClass> 				
- 					 -->	
+ 						 -->
  				</manifest>
  				<manifestEntries>
  					<mode>development</mode>

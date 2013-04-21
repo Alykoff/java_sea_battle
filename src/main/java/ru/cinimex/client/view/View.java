@@ -12,8 +12,6 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.util.Date;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -23,15 +21,12 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import ru.cinimex.client.controller.ClientController;
-import ru.cinimex.connector.BodyMessage;
-import ru.cinimex.connector.FieldInBody;
 import ru.cinimex.connector.Header;
 import ru.cinimex.connector.Message;
 import ru.cinimex.connector.PointInBody;
 import ru.cinimex.data.ClientData;
 import ru.cinimex.data.ClientState;
 import ru.cinimex.data.Field;
-import ru.cinimex.data.FieldLogic;
 import ru.cinimex.data.TypeCell;
 
 public class View extends JFrame {
@@ -59,36 +54,29 @@ public class View extends JFrame {
 		new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 	};
 	protected ClientController controller;
-	protected boolean interrupt = false;
-	protected ClientData data;
 	protected PointInBody lastStroke;
 
-	protected LogComponent log;
+	public final LogComponent log;
 	protected Panel panelTable;
 	protected Panel panelOpponentTable;
 	protected JButton startButton;
 	protected JButton endButton;
 	
-	public static void main(String[] args) {
-		new View();
-	}
-	
 	@SuppressWarnings("serial")
-	public View() {
+	public View(ClientController clientController) {
 		setLookAndFeel();
 		setTitle(DEFAULT_TITLE);
 		setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 		hideFavicone();
 		log = new LogComponent();
-		data = new ClientData(ClientState.NOT_CONNECT);
-		controller = new ClientController();
+		controller = clientController;
 		startButton = new JButton(TITLE_START_BUTTON);
 		endButton = new JButton(TITLE_LOSE_BUTTON);
 		
 		panelTable = new Panel(TITLE_OUR_FIELD_PANEL) {
 			@Override
-			protected void onclickCell(int row, int column) {
-				onclickToField(row, column);
+			protected void onclickCell(PointInBody point) {
+				onclickToField(point);
 			}
 		};
 		panelTable.setField(DEFAULT_FIELD);// TODO test.
@@ -96,8 +84,8 @@ public class View extends JFrame {
 		panelOpponentTable = new Panel(TITLE_OPPONENT_FIELD_PANEL) {
 			private static final long serialVersionUID = -5972736539712850752L;
 			@Override
-			protected void onclickCell(int row, int column) {
-				onclickToOpponentField(row, column);
+			protected void onclickCell(PointInBody point) {
+				onclickToOpponentField(point);
 			}
 		};
 		panelOpponentTable.setVisible(false);
@@ -109,10 +97,18 @@ public class View extends JFrame {
 		setVisible(true);
 	}
 	
+	public void switchToStartGameMode() {
+		panelOpponentTable.setVisible(true);
+		startButton.setEnabled(false);
+		endButton.setEnabled(true);
+		log.println("Starting game...\n");
+	}
+	
 	protected void  hideFavicone() {
 		final int IMAGE_WIDTH = 1;
 		final int IMAGE_HEIGHT = 1;
-		Image icon = new BufferedImage(IMAGE_WIDTH, IMAGE_HEIGHT, BufferedImage.TYPE_INT_ARGB_PRE);
+		Image icon = new BufferedImage(IMAGE_WIDTH, IMAGE_HEIGHT, 
+							BufferedImage.TYPE_INT_ARGB_PRE);
 		setIconImage(icon);
 	}
 	
@@ -199,59 +195,7 @@ public class View extends JFrame {
 	}
 	
 	protected void onclickStart(final String url, final String port) {
-		interrupt = false;
-		try {
-			new Thread(new Runnable() {
-				public void run() {
-					controller.connect(url, port);
-					Message msg = new Message(
-							Header.INIT, 
-							new FieldInBody(panelTable.getField()));
-					controller.send(msg);
-					panelOpponentTable.setVisible(true);
-					startButton.setEnabled(false);
-					endButton.setEnabled(true);
-					log.println("Starting game...\n");
-					data.setState(ClientState.WAIT);
-					processingGame();
-				}
-			}).start();
-		} catch (IllegalArgumentException e) {
-			log.println(e.getMessage());
-			e.printStackTrace();
-		} catch (RuntimeException e) {
-			log.println(e.getMessage());
-			e.printStackTrace();
-		}
-	}
-	
-	protected void processingGame() {
-		while (!interrupt) {
-			try {
-				Message msg = controller.recieve();
-				Header header = msg.getHeader();
-				BodyMessage body = msg.getBody();
-				if (header.equals(Header.BAD_INIT)) {
-					reactionOnBadInit();
-				} else if (header.equals(Header.BAD_STROKE)) {
-					reactionOnBadInit();
-				} else if (header.equals(Header.BIG_BANG) || header.equals(Header.STRIKE)) {
-					reactionOnGoodShot(header, body);
-				} else if (header.equals(Header.STROKE)) {
-					reactionOnStroke(header, body);
-				} else if (header.equals(Header.NOT_STROKE)) {
-					reactionOnStrokeTabu(body);						
-				} else if (header.equals(Header.TKO_WIN) || header.equals(Header.WIN)) {
-					reactionOnWin(header);
-				} else if (header.equals(Header.TKO_LOOSE) || header.equals(Header.LOOSE)) {
-					reactionOnLoose(header);
-				}
-			} catch (RuntimeException e) {
-				log.println(e.getMessage());
-				interrupt = true;
-				endGame();
-			}
-		}
+		controller.reactionOnStart(url, port);
 	}
 	
 	protected void onclickLoosing() {
@@ -259,37 +203,30 @@ public class View extends JFrame {
 		controller.close();
 		log.println("By your command of the fleet " +
 				"retreats.\nThe battle was lost!\n");
-		endGame();
+		switchToEndGame();
 	}
 	
-	protected void onclickToField(int row, int column) {
-		if (!data.equals(ClientState.NOT_CONNECT)) {
-			return;
-		}
-		int cellCode = panelTable.getField().getCell(row, column);
+	protected void onclickToField(PointInBody point) {
+//		if (!data.equals(ClientState.NOT_CONNECT)) {
+//			return;
+//		}
+		int cellCode = getCell(point, TypeField.OUR);
 		if (cellCode == TypeCell.WATER.ordinal()) {
-			panelTable.setCell(row, column, TypeCell.SHIP);
+			setCell(point, TypeCell.SHIP, TypeField.OUR);
 		} else if (cellCode == TypeCell.SHIP.ordinal()) {
-			panelTable.setCell(row, column, TypeCell.WATER);
+			setCell(point, TypeCell.WATER, TypeField.OUR);
 		}
-		panelTable.update();
+//		panelTable.update();
 	}
 	
-	protected void onclickToOpponentField(int row, int column) {
-		if (data.equals(ClientState.NOT_CONNECT) ||
-				data.equals(ClientState.WAIT) ||
-				data.equals(ClientState.WAIT_STROKE) ||
-				panelOpponentTable.getCell(row, column) != TypeCell.WATER.ordinal()) {
-			return;
-		}
-		if (lastStroke == null) {
-			lastStroke = new PointInBody(row, column);
+	protected void onclickToOpponentField(PointInBody point) {
+		if (lastStroke == null || point == null) {
+			lastStroke = point;
 		}
 	}
 	
-	protected void endGame() {
+	public void switchToEndGame() {
 		log.println("Ending game...");
-		data.setState(ClientState.NOT_CONNECT);
 		panelOpponentTable.setVisible(false);
 		panelOpponentTable.cleanField();
 		panelTable.cleanField();
@@ -297,157 +234,48 @@ public class View extends JFrame {
 		endButton.setEnabled(false);
 	}
 	
-	protected void reactionOnBadInit() {
-		log.println("Bad init.");
-		interrupt = true;
-		endGame();
-	}
-	
-	protected void reactionOnBadStroke() {
-		log.println("bad stroke.");
-		waitAndReactionToStroke();
-	}
-	
-	protected void reactionOnStroke(Header header, BodyMessage body) {
-		if (body != null || body instanceof PointInBody) {
-			int x = ((PointInBody)body).getX();
-			int y = ((PointInBody)body).getY();
-			if (panelTable.getCell(x, y) == TypeCell.WATER.ordinal()) {
-				panelTable.setCell(x, y, TypeCell.MISS);
-			}
-		} 
-		log.println("You stroke.");
-		waitAndReactionToStroke();
-	}
-	
-	protected void reactionOnGoodShot(Header header, BodyMessage body) {
-		if (lastStroke == null) {
-			log.println("Upps! We have problem! " +
-					"Sorry. End game(");
-			endGame();
+	public Field getField(TypeField typeField) {
+		if (typeField == null) {
+			throw new NullPointerException();
 		}
-		int x = lastStroke.getX();
-		int y = lastStroke.getY();
-		panelOpponentTable.setCell(x, y, TypeCell.STRAKE);
+		if (typeField.equals(TypeField.OUR)) {
+			return panelTable.getField();
+		} else if (typeField.equals(TypeField.OPPONENT)) {
+			return panelOpponentTable.getField();
+		}
+		throw new RuntimeException();
+	}
+	
+	public int getCell(PointInBody point, TypeField typeField) {
+		if (point == null || typeField == null) {
+			throw new NullPointerException();
+		}
+		if (typeField.equals(TypeField.OUR)) {
+			return panelTable.getCell(point);
+		} else if (typeField.equals(TypeField.OPPONENT)) {
+			return panelOpponentTable.getCell(point);
+		}
+		throw new RuntimeException();
+	}
+	
+	public void setCell(PointInBody point, TypeCell type, TypeField typeField) {
+		if (point == null || type == null || typeField == null) {
+			throw new NullPointerException();
+		}
+		if (typeField.equals(TypeField.OUR)) {
+			panelTable.setCell(point, type);
+		} else if (typeField.equals(TypeField.OPPONENT)) {
+			panelOpponentTable.setCell(point, type);
+		} else {
+			throw new RuntimeException();
+		}
+	}
+	
+	public PointInBody getLastStroke() {
+		return lastStroke;
+	}
+	
+	public void cleanLastStroke() {
 		lastStroke = null;
-		if (header.equals(Header.BIG_BANG)) {
-			paintPaddedShip(x, y, panelOpponentTable);
-			log.println("Yeeh! You blew up this ship!");
-		} else {
-			log.println("Good shot!");								
-		}
-		waitAndReactionToStroke();
-	}
-		
-	protected void reactionOnOfferToStroke(BodyMessage body) {
-		log.println("Your turn began.");
-		if (body != null && (body instanceof PointInBody)) {
-			log.println("Your opponent missed!");	
-			int x = ((PointInBody) body).getX();
-			int y = ((PointInBody) body).getY();
-			int cellXY = panelTable.getField().getCell(x, y);
-			if (cellXY == TypeCell.WATER.ordinal() || 
-					cellXY == TypeCell.MISS.ordinal()) {
-				panelTable.setCell(x, y, TypeCell.MISS);
-			}
-		}							
-		waitAndReactionToStroke();
-	}
-	
-	protected void reactionOnStrokeTabu(BodyMessage body) {
-		log.println("Please wait for the opponent's turn.");
-		data.setState(ClientState.WAIT);
-		if (body != null && (body instanceof PointInBody)) {
-			log.println("Hit on our ship!");
-			PointInBody point = (PointInBody) body;
-			int x = ((PointInBody) body).getX();
-			int y = ((PointInBody) body).getY();
-			boolean isBigBang = FieldLogic.detectBigBang(panelTable.getField(), point);
-			panelTable.setCell(x, y, TypeCell.STRAKE);
-			if (isBigBang) {
-				paintPaddedShip(x, y, panelTable);
-			}
-		} else if (lastStroke != null) {
-			int x = lastStroke.getX();
-			int y = lastStroke.getY();
-			if (panelOpponentTable.getCell(x, y) == TypeCell.WATER.ordinal()) {
-				panelOpponentTable.setCell(x, y, TypeCell.MISS);
-			}
-			lastStroke = null;
-		}
-	}
-	
-	protected void reactionOnWin(Header header) {
-		if (header.equals(Header.TKO_WIN)) {
-			log.println("Congratulations! You win! " +
-					"Enemy fleet fled.");
-		} else {
-			log.println(
-					"Congratulations! You win! You " +
-					"have a terrific excerpt. Enemy " +
-					"fleet defeated.");
-		}
-		interrupt = true;
-		endGame();
-	}
-	
-	protected void reactionOnLoose(Header header) {
-		if (header.equals(Header.TKO_LOOSE)) {
-			log.println("Oh! TKO lose. We lose!");
-		} else {
-			log.println("Oh! We lose!");
-		}
-		interrupt = true;
-		endGame();
-	}
-
-	private void waitAndReactionToStroke() {
-		data.setState(ClientState.STROKE);
-		long beginTime = new Date().getTime();
-		long maxTimeStroke = 30000L;
-		lastStroke = null;
-		while (lastStroke == null) {
-			if ((beginTime + maxTimeStroke) < new Date().getTime()) {
-				interrupt = true;
-				log.println("Your time is over. You lose.");
-				return;
-			}
-			try {
-				Thread.sleep(200);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		data.setState(ClientState.WAIT); 
-		try {
-			controller.send(
-				new Message(Header.STROKE, lastStroke));
-		} catch (RuntimeException e) {
-			log.println(e.getMessage());
-			interrupt = true;
-		}
-	}
-	
-	private void paintPaddedShip(int x, int y, Panel panel) {
-		if (panel.getCell(x, y) == TypeCell.WATER.ordinal()) {
-			panel.setCell(x, y, TypeCell.MISS);
-		}
-		if (panel.getCell(x, y) != TypeCell.STRAKE.ordinal()) {
-			return;
-		}
-		panel.setCell(x, y, TypeCell.BIG_BANG);
-		Field field = new Field();
-		for (int i = x - 1; i <= x + 1; i++) {
-			for (int j = y - 1; j <= y + 1; j++) {
-				if (i < 0 || 
-						i >= field.WIDTH || 
-						j < 0 || 
-						j >= field.HEIGHT) {
-					continue;
-				}
-				paintPaddedShip(i, j, panel);
-			}
-		}
-		
 	}
 }
