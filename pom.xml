@@ -27,6 +27,32 @@
   <build>
   	<plugins>
   	
+  	  <!-- <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <version>2.5.2</version>
+        <configuration>
+          <check>
+            <branchRate>5</branchRate>
+            <lineRate>5</lineRate>
+            <haltOnFailure>true</haltOnFailure>
+            <totalBranchRate>5</totalBranchRate>
+            <totalLineRate>5</totalLineRate>
+            <packageLineRate>5</packageLineRate>
+            <packageBranchRate>5</packageBranchRate>
+          </check>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>clean</goal>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin> -->
+  	
+  	
   	  <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -47,7 +73,7 @@
  				<manifest>
  					<addClasspath>true</addClasspath>
  					
- 					<mainClass>ru.cinimex.client.controller.ClientController</mainClass>
+ 					<mainClass>ru.cinimex.client.ClientController</mainClass>
 					  
 					 <!--  
 					 <mainClass>ru.cinimex.server.ServerController</mainClass> 				
@@ -80,17 +106,26 @@
   			<finalName>assignment8-client</finalName>
   			<attach>false</attach>
   	  	</configuration>
-  	  </plugin> -->  
+  	  </plugin> 
+  	  -->
   	  
   	</plugins>
   </build>
   
   <dependencies>
+  
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
+      <version>4.8.1</version>
       <scope>test</scope>
     </dependency>
+  	
+  	<dependency>
+  	  <groupId>org.mockito</groupId>
+  	  <artifactId>mockito-all</artifactId>
+  	  <version>1.8.4</version>
+  	</dependency>
+  
   </dependencies>
 </project>

@@ -9,16 +9,16 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 
-import ru.cinimex.connector.BodyMessage;
 import ru.cinimex.connector.Connector;
-import ru.cinimex.connector.FieldInBody;
-import ru.cinimex.connector.Header;
-import ru.cinimex.connector.Message;
-import ru.cinimex.connector.PointInBody;
+import ru.cinimex.data.BodyMessage;
 import ru.cinimex.data.ClientData;
 import ru.cinimex.data.ClientState;
 import ru.cinimex.data.Field;
-import static ru.cinimex.data.FieldLogic.*;
+import ru.cinimex.data.FieldInMessage;
+import ru.cinimex.data.Header;
+import ru.cinimex.data.Message;
+import ru.cinimex.data.Point;
+import static ru.cinimex.server.FieldLogic.*;
 import ru.cinimex.data.TypeCell;
 
 public class ServerController {
@@ -86,7 +86,7 @@ public class ServerController {
 					continue;
 				}
 				connector.send(ServerMessages.getInitMsg());
-				Field field = ((FieldInBody)clientMsg.getBody()).getField();
+				Field field = ((FieldInMessage)clientMsg.getBody()).getField();
 				if (client1 == null || connector1 == null) {
 					client1 = new ClientData(ClientState.NOT_CONNECT, field);
 					connector1 = connector;
@@ -155,7 +155,7 @@ public class ServerController {
 	}
 	
 	private void reactionOnStroke(BodyMessage body) throws IOException {
-		PointInBody point = (PointInBody)body;
+		Point point = (Point)body;
 		Field notActiveField = notActiveClient.getField();
 		
 		if (isWinningStroke(notActiveField, point)) {
@@ -169,7 +169,7 @@ public class ServerController {
 		}
 	}
 	
-	private void reactionOnMiss(PointInBody point) throws IOException {
+	private void reactionOnMiss(Point point) throws IOException {
 		activeClient.setState(ClientState.WAIT_STROKE);
 		notActiveClient.setState(ClientState.STROKE);
 		try {
@@ -182,7 +182,7 @@ public class ServerController {
 		activeConnector.send(ServerMessages.getMiss());
 	}
 	
-	private void reactionOnStrike(PointInBody point) throws IOException {
+	private void reactionOnStrike(Point point) throws IOException {
 		int x = point.getX();
 		int y = point.getY();
 		notActiveClient.getField().setCell(x, y, TypeCell.STRAKE);
@@ -196,13 +196,13 @@ public class ServerController {
 		activeConnector.send(ServerMessages.getStrike());
 	}
 	
-	private void reactionOnWinStroke(PointInBody point) throws IOException {
+	private void reactionOnWinStroke(Point point) throws IOException {
 		notActiveConnector.send(ServerMessages.getLoose(point));
 		activeConnector.send(ServerMessages.getWin());
 		isEndGame = true;
 	}
 	
-	private void reactionOnBigBang(PointInBody point) throws IOException {
+	private void reactionOnBigBang(Point point) throws IOException {
 		int x = point.getX();
 		int y = point.getY();
 		notActiveClient.getField().setCell(x, y, TypeCell.STRAKE);
@@ -242,11 +242,11 @@ public class ServerController {
 		}
 		if (!clientMsg.getHeader().equals(Header.INIT) ||
 				(clientMsg.getBody() == null) ||
-				!(clientMsg.getBody() instanceof FieldInBody)) {
+				!(clientMsg.getBody() instanceof FieldInMessage)) {
 			return false;
 		}
 		
-		FieldInBody fieldInBody = (FieldInBody)clientMsg.getBody();
+		FieldInMessage fieldInBody = (FieldInMessage)clientMsg.getBody();
 		Field field = fieldInBody.getField();
 		
 		if (field == null || !isValidInitField(field)) {
@@ -261,11 +261,11 @@ public class ServerController {
 		}
 		if (!clientMsg.getHeader().equals(Header.STROKE) ||
 				(clientMsg.getBody() == null) ||
-				!(clientMsg.getBody() instanceof PointInBody)) {
+				!(clientMsg.getBody() instanceof Point)) {
 			return false;
 		}
 		
-		PointInBody point = (PointInBody)clientMsg.getBody();
+		Point point = (Point)clientMsg.getBody();
 		int x = point.getX();
 		int y = point.getY();
 		

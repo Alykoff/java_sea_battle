@@ -9,9 +9,8 @@ import java.util.Arrays;
 
 public class Field implements Cloneable, Serializable {
 	private static final long serialVersionUID = 2932346134737082459L;
-	public final int length = 10;
-	public final int HEIGHT = length;
-	public final int WIDTH = length;
+	public static final int HEIGHT = 10;
+	public static final int WIDTH = 10;
 	private int[][] field = new int[HEIGHT][WIDTH];
 	
 	public Field() {

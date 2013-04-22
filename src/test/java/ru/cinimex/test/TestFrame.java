@@ -20,7 +20,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import ru.cinimex.client.view.LogComponent;
+
+import ru.cinimex.client.gui.LogComponent;
 
 public class TestFrame extends JFrame {
 	private static final long serialVersionUID = 6182293296261742100L;

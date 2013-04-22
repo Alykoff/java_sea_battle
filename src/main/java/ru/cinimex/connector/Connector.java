@@ -11,6 +11,8 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
+import ru.cinimex.data.Message;
+
 public class Connector {
 	protected Socket socket;
 	
@@ -26,29 +28,35 @@ public class Connector {
 	}
 	
 	public void send(Message msg) throws IOException {
+		
 		System.out.println("\n\n==============Send==============");
 		System.out.println(new java.util.Date().toString());
 		System.out.println(msg.toString());
+		
 		OutputStream outputStream = null;
 		ObjectOutputStream objOutputStream = null;
 		outputStream = socket.getOutputStream();
 		objOutputStream = new ObjectOutputStream(outputStream);
 		objOutputStream.writeObject(msg);
+		
 		System.out.println("===================================");
-
 	}
 	
 	public Message recieve() throws IOException, ClassNotFoundException, ClassCastException {
+		
 		System.out.println("\n\n====================Resieve==================");
 		System.out.println(new java.util.Date().toString());
+		
 		InputStream inputStream = null;
 		ObjectInputStream objInputStream = null;
 		System.out.println(socket.isClosed() + " " + new java.util.Date().toString());
 		inputStream = socket.getInputStream();
 		objInputStream = new ObjectInputStream(inputStream);
+		
 		Message msg = (Message) objInputStream.readObject();
 		System.out.println(msg.toString());
 		System.out.println("=============================================");
+		
 		return msg;		
 	}
 	

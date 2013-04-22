@@ -4,9 +4,9 @@
  */
 package ru.cinimex.server;
 
-import ru.cinimex.connector.Header;
-import ru.cinimex.connector.Message;
-import ru.cinimex.connector.PointInBody;
+import ru.cinimex.data.Header;
+import ru.cinimex.data.Message;
+import ru.cinimex.data.Point;
 
 public class ServerMessages {
 	
@@ -22,7 +22,7 @@ public class ServerMessages {
 		return new Message(Header.STROKE, null);
 	}
 	
-	public static Message getStrokeMsg(PointInBody point) {
+	public static Message getStrokeMsg(Point point) {
 		return new Message(Header.STROKE, point);
 	}
 	
@@ -30,7 +30,7 @@ public class ServerMessages {
 		return new Message(Header.NOT_STROKE, null);
 	}
 	
-	public static Message getNotStrokeMsg(PointInBody point) {
+	public static Message getNotStrokeMsg(Point point) {
 		return new Message(Header.NOT_STROKE, point);
 	}
 	
@@ -50,7 +50,7 @@ public class ServerMessages {
 		return new Message(Header.WIN, null);
 	}
 	
-	public static Message getLoose(PointInBody point) {
+	public static Message getLoose(Point point) {
 		return new Message(Header.LOOSE, point);
 	}
 	
@@ -62,7 +62,7 @@ public class ServerMessages {
 		return new Message(Header.STRIKE, null);
 	}
 	
-	public static Message getNotStrike(PointInBody point) {
+	public static Message getNotStrike(Point point) {
 		return new Message(Header.NOT_STROKE, point);
 	}
 	

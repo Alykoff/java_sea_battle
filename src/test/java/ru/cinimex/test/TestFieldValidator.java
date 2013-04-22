@@ -5,7 +5,7 @@
 package ru.cinimex.test;
 
 import ru.cinimex.data.Field;
-import ru.cinimex.data.FieldLogic;
+import ru.cinimex.server.FieldLogic;
 
 public class TestFieldValidator {
 	public static void main(String[] args) {
