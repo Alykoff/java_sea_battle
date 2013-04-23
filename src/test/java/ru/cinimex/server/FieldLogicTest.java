@@ -218,13 +218,8 @@ public class FieldLogicTest extends TestCase {
 	}
 	
 	@Test
-	public void isStrikeTest() {
-		try {
-			isStrike(null, null);
-		} catch (NullPointerException e) {
-			// not catching
-		}
-		int[][] data1 = new int[][] {
+	public void testIsStrike() {
+		int[][] validData1 = new int[][] {
 				new int[] {s, s, s, s, w, s, s, s, w, w},
 				new int[] {w, w, w, w, w, w, w, w, w, w},
 				new int[] {s, s, s, w, s, s, w, s, s, w},
@@ -236,13 +231,108 @@ public class FieldLogicTest extends TestCase {
 				new int[] {w, w, w, w, w, w, w, w, w, w},
 				new int[] {w, w, w, w, w, w, w, w, w, w}
 		};
-		Field field = new Field(data1);
+		Field field = new Field(validData1);
 		
 		Point validStrike = new Point(0, 0);
 		Point invalidStrike = new Point(1, 0);
 		
+		try {
+			isStrike(null, null);
+			fail("null test fail");
+		} catch (NullPointerException e) {
+			// not tracing
+		}
+		
+		try {
+			isStrike(field, null);
+			fail("null test fail");
+		} catch (NullPointerException e) {
+			// not tracing
+		}
+		
+		try {
+			isStrike(null, validStrike);
+			fail("null test fail");
+		} catch (NullPointerException e) {
+			// not tracing
+		}
+		
 		assertTrue(isStrike(field, validStrike));
 		assertFalse(isStrike(field, invalidStrike));
+	}
+	
+	@Test
+	public void testValidateStroke() {
+		try {
+			validateStroke(null);
+			fail("null test fail");
+		} catch (NullPointerException e) {
+			// not tracing
+		}
+		Point invalidPoint1 = new Point(10, 0);
+		Point invalidPoint2 = new Point(0, -1);
+		Point validPoint1 = new Point(9, 9);
+		
+		assertFalse(validateStroke(invalidPoint1));
+		assertFalse(validateStroke(invalidPoint2));
+		assertTrue(validateStroke(validPoint1));		
+	}
+	
+	@Test
+	public void testDetectedBigBang() {
+		int[][] validDataBigBang1 = new int[][] {
+				new int[] {s, s, s, s, w, s, s, s, w, w},
+				new int[] {w, w, w, w, w, w, w, w, w, w},
+				new int[] {s, s, s, w, s, s, w, s, s, w},
+				new int[] {w, w, w, w, w, w, w, w, w, w},
+				new int[] {s, s, w, w, w, w, s, w, s, w},
+				new int[] {w, w, w, w, w, w, w, w, w, w},
+				new int[] {s, w, s, w, w, w, w, w, w, w},
+				new int[] {w, w, w, w, w, w, w, w, w, w},
+				new int[] {w, w, w, w, w, w, w, w, w, w},
+				new int[] {w, w, w, w, w, w, w, w, w, w}
+		};
+		Field validFieldBigBang1 = new Field(validDataBigBang1);
+		Point validPointBigBang1 = new Point(6, 0);
+		
+		int[][] invalidDataBigBang1 = new int[][] {
+				new int[] {s, t, t, s, w, s, s, s, w, w},
+				new int[] {w, w, w, w, w, w, w, w, w, w},
+				new int[] {s, s, s, w, s, s, w, s, s, w},
+				new int[] {w, w, w, w, w, w, w, w, w, w},
+				new int[] {s, s, w, w, w, w, s, w, s, w},
+				new int[] {w, w, w, w, w, w, w, w, w, w},
+				new int[] {s, w, s, w, w, w, w, w, w, w},
+				new int[] {w, w, w, w, w, w, w, w, w, w},
+				new int[] {w, w, w, w, w, w, w, w, w, w},
+				new int[] {w, w, w, w, w, w, w, w, w, w}
+		};
+		Field invalidFieldBigBang1 = new Field(invalidDataBigBang1);
+		Point invalidPointBigBang1 = new Point(0, 3);
+		Point invalidPointBigBang2 = new Point(0, 4);		
+		
+		try {
+			detectBigBang(null, null);
+			fail("null test fail");
+		} catch(NullPointerException e) {
+			// not tracing
+		}
+		try {
+			detectBigBang(validFieldBigBang1, null);
+			fail("null test fail");
+		} catch(NullPointerException e) {
+			// not tracing
+		}
+		try {
+			detectBigBang(null, validPointBigBang1);
+			fail("null test fail");
+		} catch(NullPointerException e) {
+			// not tracing
+		}		
+		assertTrue(detectBigBang(validFieldBigBang1, validPointBigBang1));
+		assertFalse(detectBigBang(invalidFieldBigBang1, invalidPointBigBang1));
+		assertFalse(detectBigBang(invalidFieldBigBang1, invalidPointBigBang2));
+		
 	}
 	
 	
