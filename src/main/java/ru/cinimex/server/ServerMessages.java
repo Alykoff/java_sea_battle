@@ -23,6 +23,9 @@ public class ServerMessages {
 	}
 	
 	public static Message getStrokeMsg(Point point) {
+		if (point == null) {
+			throw new NullPointerException();
+		}
 		return new Message(Header.STROKE, point);
 	}
 	
@@ -31,6 +34,9 @@ public class ServerMessages {
 	}
 	
 	public static Message getNotStrokeMsg(Point point) {
+		if (point == null) {
+			throw new NullPointerException();
+		}
 		return new Message(Header.NOT_STROKE, point);
 	}
 	
@@ -63,6 +69,9 @@ public class ServerMessages {
 	}
 	
 	public static Message getNotStrike(Point point) {
+		if (point == null) {
+			throw new NullPointerException();
+		}
 		return new Message(Header.NOT_STROKE, point);
 	}
 	

@@ -28,8 +28,28 @@ public class Message implements Serializable {
 		return body;
 	}
 	
+	@Override
 	public String toString() {
 		return "Header = " + header + "\n" +
 				"Body = " + body;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null || !(obj instanceof Message)) {
+			return false;
+		}
+		Message msg = (Message) obj;
+		if (!header.equals(msg.getHeader())) {
+			return false;
+		}
+		if (body == null) {
+			if (msg.getBody() == null) return true;
+			else return false;
+		}
+		if (!body.equals(msg.getBody())) {
+			return false;
+		}
+		return true;
 	}
 }

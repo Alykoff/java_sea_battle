@@ -18,7 +18,7 @@ public class Connector {
 	
 	public Connector(Socket socket) {
 		if (socket == null) {
-			throw new RuntimeException();
+			throw new NullPointerException();
 		}
 		this.socket = socket;
 	}

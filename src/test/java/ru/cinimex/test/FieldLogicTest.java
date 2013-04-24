@@ -2,11 +2,9 @@
  * @author Alykov Gali
  * @date 22.04.2013
  */
-package ru.cinimex.server;
-
+package ru.cinimex.test;
 
 import junit.framework.TestCase;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

@@ -51,7 +51,7 @@ public class Field implements Cloneable, Serializable {
 				y < 0 || 
 				x > (WIDTH - 1) || 
 				y > (HEIGHT - 1)) {
-			throw new RuntimeException();
+			throw new IllegalArgumentException();
 		}
 		return field[x][y];
 	}
