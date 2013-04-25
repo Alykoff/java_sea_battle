@@ -43,7 +43,7 @@ public class TableRenderer extends DefaultTableCellRenderer {
 		} else if (intValue.equals(TypeCell.SHIP.ordinal())) {
 			setForeground(COLOR_SHIP);
 			setBackground(COLOR_SHIP);			
-		} else if (intValue.equals(TypeCell.STRAKE.ordinal())) {
+		} else if (intValue.equals(TypeCell.STRIKE.ordinal())) {
 			setForeground(COLOR_STRAKE);
 			setBackground(COLOR_STRAKE);
 		} else if (intValue.equals(TypeCell.BIG_BANG.ordinal())) {

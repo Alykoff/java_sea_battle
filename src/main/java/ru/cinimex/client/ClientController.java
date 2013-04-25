@@ -133,7 +133,7 @@ public class ClientController {
 			interrupt = true;
 			endGame();
 		}
-		getView().setCell(stroke, TypeCell.STRAKE, TypeField.OPPONENT);
+		getView().setCell(stroke, TypeCell.STRIKE, TypeField.OPPONENT);
 		if (header.equals(Header.BIG_BANG)) {
 			paintPaddedShip(stroke, TypeField.OPPONENT);
 			getView().println("Yeeh! You blew up this ship!");
@@ -184,7 +184,7 @@ public class ClientController {
 		if (getView().getCell(point, typeField).equals(TypeCell.WATER)) {
 			getView().setCell(point, TypeCell.MISS, typeField);
 		}
-		if (!getView().getCell(point, typeField).equals(TypeCell.STRAKE)) {
+		if (!getView().getCell(point, typeField).equals(TypeCell.STRIKE)) {
 			return;
 		}
 		getView().setCell(point, TypeCell.BIG_BANG, typeField);
@@ -232,7 +232,7 @@ public class ClientController {
 		getView().println("Hit on our ship!");
 		Field field = getView().getField(TypeField.OUR);
 		boolean isBigBang = FieldLogic.detectBigBang(field, point);
-		getView().setCell(point, TypeCell.STRAKE, TypeField.OUR);
+		getView().setCell(point, TypeCell.STRIKE, TypeField.OUR);
 		if (isBigBang) {
 			paintPaddedShip(point, TypeField.OUR);
 		}

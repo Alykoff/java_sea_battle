@@ -68,7 +68,7 @@ public class ServerMessages {
 		return new Message(Header.STRIKE, null);
 	}
 	
-	public static Message getNotStrike(Point point) {
+	public static Message getNotStroke(Point point) {
 		if (point == null) {
 			throw new NullPointerException();
 		}

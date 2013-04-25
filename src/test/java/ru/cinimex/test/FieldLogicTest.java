@@ -21,7 +21,7 @@ public class FieldLogicTest extends TestCase {
 	public void setUp() throws Exception {
 		s = TypeCell.SHIP.ordinal();
 		w = TypeCell.WATER.ordinal();
-		t = TypeCell.STRAKE.ordinal();
+		t = TypeCell.STRIKE.ordinal();
 		b = TypeCell.BIG_BANG.ordinal();
 		m = TypeCell.MISS.ordinal();
 		

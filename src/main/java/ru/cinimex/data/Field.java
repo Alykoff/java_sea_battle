@@ -59,7 +59,7 @@ public class Field implements Cloneable, Serializable {
 	public void makeStroke(int x, int y) {
 		int cell = field[x][y];
 		if (cell == TypeCell.SHIP.ordinal()) {
-			field[x][y] = TypeCell.STRAKE.ordinal();
+			field[x][y] = TypeCell.STRIKE.ordinal();
 		} else if (cell == TypeCell.WATER.ordinal()) {
 			field[x][y] = TypeCell.MISS.ordinal();
 		}
@@ -80,7 +80,23 @@ public class Field implements Cloneable, Serializable {
 			result += Arrays.toString(field[i]) + "\n";
 		}
 		return result;
-	}	
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null || !(obj instanceof Field)) {
+			return false;
+		}
+		Field that = (Field) obj;
+		for (int i = 0; i < WIDTH; i++) {
+			for (int j = 0; j < HEIGHT; j++) {
+				if (field[i][j] != that.getCell(i, j)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 	
 	@Override
 	public Field clone() {

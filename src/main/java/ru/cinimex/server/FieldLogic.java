@@ -42,7 +42,7 @@ public class FieldLogic {
 		int y = point.getY();
 		Field newField = field.clone();
 		newField.makeStroke(x, y);
-		return validateForType(TypeCell.STRAKE, newField);
+		return validateForType(TypeCell.STRIKE, newField);
 	}
 	
 	public static boolean isStrike(Field field, Point point) {
@@ -86,7 +86,7 @@ public class FieldLogic {
 			return false;
 		}
 		Field newField = field.clone();
-		newField.setCell(x, y, TypeCell.STRAKE);
+		newField.setCell(x, y, TypeCell.STRIKE);
 		ArrayList<Point2D.Float> acc = new ArrayList<Point2D.Float>();
 		return detectBigBankHelper(x, y, newField, acc);
 	}
@@ -97,7 +97,7 @@ public class FieldLogic {
 			return false;
 		}
 		if (acc.contains(new Point2D.Float(x, y)) ||
-				field.getCell(x, y) != TypeCell.STRAKE.ordinal()) {
+				field.getCell(x, y) != TypeCell.STRIKE.ordinal()) {
 			return true;
 		}
 		acc.add(new Point2D.Float(x, y));

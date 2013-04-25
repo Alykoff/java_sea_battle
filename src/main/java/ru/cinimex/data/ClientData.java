@@ -61,4 +61,16 @@ public class ClientData {
 		return dateLastMsg;
 	}
 	
+	public boolean equals(Object obj) {
+		if (obj == null || !(obj instanceof ClientData)) {
+			return false;
+		}
+		ClientData that = (ClientData) obj;
+		if (!that.getField().equals(this.getField()) ||
+				!that.getState().equals(this.getState())) {
+			return false;
+		}
+		return true;
+	}
+	
 }
