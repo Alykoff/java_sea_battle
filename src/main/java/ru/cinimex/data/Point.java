@@ -39,4 +39,18 @@ public class Point extends BodyMessage implements Serializable {
 	public String toString() {
 		return "x = " + x + "; y = " + y;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null || !(obj instanceof Point)) {
+			return false;
+		}
+		Point that = (Point) obj;
+		if (that.getX() != this.getX() ||
+				that.getY() != this.getY()) {
+			return false;
+		}
+		return true;
+		
+	}
 }

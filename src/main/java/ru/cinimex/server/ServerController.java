@@ -102,8 +102,8 @@ public class ServerController {
 	public boolean isClientCollected() {
 		if (getClient1() != null && 
 				getClient2() != null && 
-				connector1 != null && 
-				connector2 != null) {
+				getConnector1() != null && 
+				getConnector2() != null) {
 			return true;
 		}
 		return false;
@@ -114,7 +114,7 @@ public class ServerController {
 			actionsAndSettingsBeforeStartGame();
 		} catch (IOException e1) {
 			e1.printStackTrace();
-			endGame = true;
+			setEndGame(true);
 			return;
 		}
 		while (!isEndGame()) {
@@ -122,10 +122,10 @@ public class ServerController {
 				gameLoop();
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
-				endGame = true;
+				setEndGame(true);
 			} catch (IOException e) {
 				e.printStackTrace();
-				endGame = true;
+				setEndGame(true);
 			}
 		}
 	}
@@ -283,13 +283,13 @@ public class ServerController {
 		return true;
 	}	
 	
-	protected void endGame() {
-		client1 = null;
-		client2 = null;
+	public void endGame() {
+		setClient1(null);
+		setClient2(null);
 		if (connector1 != null) connector1.close();
 		if (connector2 !=  null) connector2.close();
-		connector1 = null;
-		connector2 = null;
+		setConnector1(null);
+		setConnector2(null);
 	}
 	
 	public Connector getActiveConnector() {
@@ -346,7 +346,7 @@ public class ServerController {
 		throw new RuntimeException("Bad client state.");
 	}	
 		
-	private void sleepUnderErr() {
+	public void sleepUnderErr() {
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e1) {
@@ -404,5 +404,14 @@ public class ServerController {
 	public Connector getConnector2() {
 		return this.connector2;
 	}
+	
+	public void setConnector1(Connector connector) {
+		this.connector1 = connector;
+	}
+	
+	public void setConnector2(Connector connector) {
+		this.connector2 = connector;
+	}
+
 }
 

@@ -4,16 +4,13 @@
  */
 package ru.cinimex.test;
 
-import static org.junit.Assert.*;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import junit.framework.TestCase;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.mockito.Mockito.*;
 import ru.cinimex.connector.Connector;
@@ -28,16 +25,8 @@ import ru.cinimex.data.TypeCell;
 import ru.cinimex.server.ServerController;
 import ru.cinimex.server.ServerMessages;
 
-public class TestServerController {
+public class TestServerController extends TestCase {
 	int s, w, t, b, m;
-		
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-	}
-
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
 
 	@Before
 	public void setUp() throws Exception {
@@ -738,4 +727,147 @@ public class TestServerController {
 		
 		controller.close();
 	}
+	
+	@Test
+	public void testEndGame() {
+		ServerController controller = new ServerController();
+		ServerController spyController = spy(controller);
+		Connector notActiveConnector = mock(Connector.class);
+		Connector activeConnector = mock(Connector.class);
+		ClientData strokeClient = new ClientData(ClientState.STROKE);
+		ClientData waitStrokeClient = new ClientData(ClientState.WAIT_STROKE);
+		when(spyController.getClient1()).thenReturn(strokeClient);
+		when(spyController.getClient2()).thenReturn(waitStrokeClient);
+		when(spyController.getNotActiveConnector()).thenReturn(notActiveConnector);
+		when(spyController.getActiveConnector()).thenReturn(activeConnector);
+		spyController.endGame();
+		verify(spyController, times(1)).setClient1(null);
+		verify(spyController, times(1)).setClient2(null);
+		verify(spyController, times(1)).setConnector1(null);
+		
+		controller.close();
+	}
+	
+	@Test
+	public void testStartGame() {
+		ServerController controller = new ServerController();
+		ServerController spyController = spy(controller);
+		Connector notActiveConnector = mock(Connector.class);
+		Connector activeConnector = mock(Connector.class);
+		ClientData strokeClient = new ClientData(ClientState.STROKE);
+		ClientData waitStrokeClient = new ClientData(ClientState.WAIT_STROKE);
+		when(spyController.getClient1()).thenReturn(strokeClient);
+		when(spyController.getClient2()).thenReturn(waitStrokeClient);
+		when(spyController.getNotActiveConnector()).thenReturn(notActiveConnector);
+		when(spyController.getActiveConnector()).thenReturn(activeConnector);
+		
+		int numCallSetEndGameTrue = 0;
+		int numCallGameLoop = 0;
+		// ==== loop IOException case
+		try {
+			doThrow(new IOException()).when(spyController).gameLoop();
+		} catch (IOException e) {
+			fail("catch exception");
+		} catch (ClassNotFoundException e) {
+			fail("catch exception");
+		}
+		spyController.startGame();
+		verify(spyController, times(++numCallSetEndGameTrue)).setEndGame(true);
+		try {
+			verify(spyController, times(++numCallGameLoop)).gameLoop();
+		} catch (ClassNotFoundException e) {
+			fail("catch exception");
+		} catch (IOException e) {
+			fail("catch exception");
+		}
+		// ==== loop ClassNotFoundException
+		try {
+			doThrow(new ClassNotFoundException()).when(spyController).gameLoop();
+		} catch (IOException e) {
+			fail("catch exception");
+		} catch (ClassNotFoundException e) {
+			fail("catch exception");
+		}
+		spyController.startGame();
+		verify(spyController, times(++numCallSetEndGameTrue)).setEndGame(true);
+		try {
+			verify(spyController, times(++numCallGameLoop)).gameLoop();
+		} catch (ClassNotFoundException e) {
+			fail("catch exception");
+		} catch (IOException e) {
+			fail("catch exception");
+		}
+		
+		// ==== settings IOException case
+		try {
+			doThrow(new IOException()).when(spyController).actionsAndSettingsBeforeStartGame();
+		} catch (IOException e) {
+			fail("catch exception");
+		}
+		spyController.startGame();
+		verify(spyController, times(++numCallSetEndGameTrue)).setEndGame(true);
+		try {
+			verify(spyController, times(numCallGameLoop)).gameLoop();
+		} catch (ClassNotFoundException e) {
+			fail("catch exception");
+		} catch (IOException e) {
+			fail("catch exception");
+		}
+		
+		controller.close();
+	}
+	
+	@Test
+	public void testIsClientCollected() {
+		ServerController controller = new ServerController();
+		ServerController spyController = spy(controller);
+		Connector notActiveConnector = mock(Connector.class);
+		Connector activeConnector = mock(Connector.class);
+		ClientData strokeClient = new ClientData(ClientState.STROKE);
+		ClientData waitStrokeClient = new ClientData(ClientState.WAIT_STROKE);
+		when(spyController.getClient1()).thenReturn(null);
+		when(spyController.getClient2()).thenReturn(waitStrokeClient);
+		when(spyController.getConnector1()).thenReturn(notActiveConnector);
+		when(spyController.getConnector2()).thenReturn(activeConnector);
+		
+		// ==== 
+		assertFalse(spyController.isClientCollected());
+		// ====
+		when(spyController.getClient1()).thenReturn(strokeClient);
+		assertTrue(spyController.isClientCollected());
+		
+		controller.close();
+	}
+	
+//	@Test
+//	@Ignore
+//	public void testConnectClients() {
+//		ServerController controller = new ServerController();
+//		ServerController spyController = spy(controller);
+//		Connector notActiveConnector = mock(Connector.class);
+//		Connector activeConnector = mock(Connector.class);
+//		ClientData waitStrokeClient = new ClientData(ClientState.WAIT_STROKE);
+//		when(spyController.getClient1()).thenReturn(null);
+//		when(spyController.getClient2()).thenReturn(waitStrokeClient);
+//		when(spyController.getConnector1()).thenReturn(notActiveConnector);
+//		when(spyController.getConnector2()).thenReturn(activeConnector);
+//		doThrow(new RuntimeException()).when(spyController).sleepUnderErr();
+//		spyController.connectClients();
+//		// ==== IOException case
+//		try {
+//			doThrow(new IOException()).when(spyController).connectClientsLoop();
+//		} catch (ClassNotFoundException e) {
+//			fail("catch exception");
+//		} catch (IOException e) {
+//			fail("catch exception");
+//		}
+//		try {
+//			spyController.connectClients();
+//			fail("exception lose");
+//		} catch (RuntimeException e) {
+//			// do nothing
+//		}
+//		controller.close();
+//	}
+	
 }

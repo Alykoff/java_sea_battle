@@ -5,7 +5,6 @@
 package ru.cinimex.test;
 
 import junit.framework.TestCase;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import static ru.cinimex.server.FieldLogic.*;
@@ -25,10 +24,6 @@ public class FieldLogicTest extends TestCase {
 		b = TypeCell.BIG_BANG.ordinal();
 		m = TypeCell.MISS.ordinal();
 		
-	}
-
-	@After
-	public void tearDown() throws Exception {
 	}
 	
 	@Test
@@ -273,7 +268,7 @@ public class FieldLogicTest extends TestCase {
 		
 		assertFalse(validateStroke(invalidPoint1));
 		assertFalse(validateStroke(invalidPoint2));
-		assertTrue(validateStroke(validPoint1));		
+		assertTrue(validateStroke(validPoint1));
 	}
 	
 	@Test
@@ -332,6 +327,7 @@ public class FieldLogicTest extends TestCase {
 		assertFalse(detectBigBang(invalidFieldBigBang1, invalidPointBigBang2));
 		
 	}
+	
 	
 	
 }

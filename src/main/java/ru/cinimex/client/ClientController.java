@@ -30,12 +30,17 @@ public class ClientController {
 	protected final int MAX_TIME_STROKE = 3 * 60 * 1000;
 	
 	public ClientController() {
-		setView(new View(this));
 		setData(new ClientData(ClientState.NOT_CONNECT));
 	}
 	
+	public void startClient() {
+		setView(new View(this));
+		this.view.setVisible(true);
+	}
+	
 	public static void main(String[] args) {
-		new ClientController();
+		ClientController controller = new ClientController();
+		controller.startClient();
 	}
 	
 	public void reactionOnStart(final String url, final String port) {
@@ -70,25 +75,10 @@ public class ClientController {
 		return new Message(header, body);
 	}
 	
-	private void processingGame() {
+	public void processingGame() {
 		while (!interrupt) {
 			try {
-				Message msg = recieve();
-				Header header = msg.getHeader();
-				BodyMessage body = msg.getBody();
-				if (header.equals(Header.BAD_INIT) || header.equals(Header.BAD_STROKE)) {
-					reactionOnBadInit();
-				} else if (header.equals(Header.TKO_WIN) || header.equals(Header.WIN)) {
-					reactionOnWin(header);
-				} else if (header.equals(Header.TKO_LOOSE) || header.equals(Header.LOOSE)) {
-					reactionOnLoose(header);
-				} else if (header.equals(Header.BIG_BANG) || header.equals(Header.STRIKE)) {
-					reactionOnGoodShot(header, body);
-				} else if (header.equals(Header.STROKE)) {
-					reactionOnStroke(header, body);
-				} else if (header.equals(Header.NOT_STROKE)) {
-					reactionOnStrokeTabu(body);						
-				} 
+				gameLoop();
 			} catch (RuntimeException e) {
 				e.printStackTrace();
 				getView().println(e.getMessage());
@@ -98,19 +88,38 @@ public class ClientController {
 		}
 	}
 	
-
-	protected void reactionOnBadInit() {
+	public void gameLoop() {
+		Message msg = recieve();
+		Header header = msg.getHeader();
+		BodyMessage body = msg.getBody();
+		if (header.equals(Header.BAD_INIT)) {
+			reactionOnBadInit();
+		} else if (header.equals(Header.TKO_WIN) || header.equals(Header.WIN)) {
+			reactionOnWin(header);
+		} else if (header.equals(Header.TKO_LOOSE) || header.equals(Header.LOOSE)) {
+			reactionOnLoose(header);
+		} else if (header.equals(Header.BIG_BANG) || header.equals(Header.STRIKE)) {
+			reactionOnGoodShot(header, body);
+		} else if (header.equals(Header.STROKE)) {
+			reactionOnStroke(header, body);
+		} else if (header.equals(Header.NOT_STROKE)) {
+			reactionOnStrokeTabu(body);
+		}
+	}
+	
+	
+	public void reactionOnBadInit() {
 		getView().println("Bad init.");
 		interrupt = true;
 		endGame();
 	}
 	
-	protected void reactionOnBadStroke() {
+	public void reactionOnBadStroke() {
 		getView().println("bad stroke.");
 		waitAndReactionToStroke();
 	}
 	
-	protected void reactionOnStroke(Header header, BodyMessage body) {
+	public void reactionOnStroke(Header header, BodyMessage body) {
 		if (body != null || body instanceof Point) {
 			Point point = (Point) body;
 			reactionOnSuccessfulStroke(point);
@@ -119,13 +128,13 @@ public class ClientController {
 		waitAndReactionToStroke();
 	}
 	
-	protected void reactionOnSuccessfulStroke(Point point) {
+	public void reactionOnSuccessfulStroke(Point point) {
 		if (getView().getCell(point, TypeField.OUR).equals(TypeCell.WATER)) {
 			getView().setCell(point, TypeCell.MISS, TypeField.OUR);
 		}		
 	}
 	
-	protected void reactionOnGoodShot(Header header, BodyMessage body) {
+	public void reactionOnGoodShot(Header header, BodyMessage body) {
 		final Point stroke = getView().getLastStroke();
 		if (stroke == null) {
 			getView().println("Upps! We have problem! " +
@@ -144,7 +153,7 @@ public class ClientController {
 		waitAndReactionToStroke();
 	}
 	
-	private void waitAndReactionToStroke() {
+	public void waitAndReactionToStroke() {
 		long beginTime = new Date().getTime();
 		getData().setState(ClientState.STROKE);
 		getView().cleanLastStroke();
@@ -171,16 +180,15 @@ public class ClientController {
 		}
 	}
 	
-	protected void endGame() {
+	public void endGame() {
 		getData().setState(ClientState.NOT_CONNECT);
 		getView().switchToEndGame();
 	}
 	
-	private void paintPaddedShip(Point point, TypeField typeField) {
+	public void paintPaddedShip(Point point, TypeField typeField) {
 		if (point == null || typeField == null) {
 			throw new NullPointerException();
 		}
-		
 		if (getView().getCell(point, typeField).equals(TypeCell.WATER)) {
 			getView().setCell(point, TypeCell.MISS, typeField);
 		}
@@ -204,7 +212,7 @@ public class ClientController {
 		
 	}
 		
-	protected void reactionOnOfferToStroke(BodyMessage body) {
+	public void reactionOnOfferToStroke(BodyMessage body) {
 		getView().println("Your turn began.");
 		if (body != null && (body instanceof Point)) {
 			getView().println("Your opponent missed!");
@@ -217,7 +225,7 @@ public class ClientController {
 		waitAndReactionToStroke();
 	}
 	
-	protected void reactionOnStrokeTabu(BodyMessage body) {
+	public void reactionOnStrokeTabu(BodyMessage body) {
 		getView().println("Please wait for the opponent's turn.");
 		getData().setState(ClientState.WAIT);
 		if (body != null && (body instanceof Point)) {
@@ -228,7 +236,7 @@ public class ClientController {
 		}
 	}
 	
-	protected void reactionOnHitInOurShip(Point point) {
+	public void reactionOnHitInOurShip(Point point) {
 		getView().println("Hit on our ship!");
 		Field field = getView().getField(TypeField.OUR);
 		boolean isBigBang = FieldLogic.detectBigBang(field, point);
@@ -238,7 +246,7 @@ public class ClientController {
 		}
 	}
 	
-	protected void reactionOnMiss() {
+	public void reactionOnMiss() {
 		Point stroke = getView().getLastStroke();
 		TypeCell  typeCellUnderStrokePoint = getView().getCell(stroke, TypeField.OPPONENT);
 		if (typeCellUnderStrokePoint.equals(TypeCell.WATER)) {
@@ -247,7 +255,7 @@ public class ClientController {
 		getView().cleanLastStroke();
 	}
 	
-	protected void reactionOnWin(Header header) {
+	public void reactionOnWin(Header header) {
 		if (header.equals(Header.TKO_WIN)) {
 			getView().println("Congratulations! You win! " +
 					"Enemy fleet fled.");
@@ -261,7 +269,7 @@ public class ClientController {
 		endGame();
 	}
 	
-	protected void reactionOnLoose(Header header) {
+	public void reactionOnLoose(Header header) {
 		if (header.equals(Header.TKO_LOOSE)) {
 			getView().println("Oh! TKO lose. We lose!");
 		} else if (header.equals(Header.LOOSE)) {
@@ -274,7 +282,7 @@ public class ClientController {
 	}
 
 	
-	protected void connect(String url, String port) throws IllegalArgumentException,
+	public void connect(String url, String port) throws IllegalArgumentException,
 														RuntimeException {	
 		try {
 			int intPort = Integer.parseInt(port);
@@ -349,6 +357,10 @@ public class ClientController {
 
 	public Connector getConnector() {
 		return connector;
+	}
+	
+	public void exit() {
+		
 	}
 	
 }

@@ -93,7 +93,6 @@ public class View extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		locationInCenterMonitor(this);
 		setResizable(false);
-		setVisible(true);
 	}
 	
 	public void switchToStartGameMode() {
