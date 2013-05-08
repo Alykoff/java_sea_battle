@@ -23,16 +23,11 @@ public class ServerController {
 	private ClientData client1;
 	private ClientData client2;
 	private ServerSocket serverSocket;
-	protected Connector connector1;
-	protected Connector connector2;
+	private Connector connector1;
+	private Connector connector2;
 	private Connector grabbedConnector;
-	
-//	private ClientData activeClient;
-//	private ClientData notActiveClient;
-//	private Connector activeConnector;
-//	private Connector notActiveConnector;
-	
 	private boolean endGame;
+	
 	public static final int SERVER_PORT = 9000;
 	
 	public ServerController() {
@@ -64,7 +59,7 @@ public class ServerController {
 		}
 	}
 		
-	public void connectClients() {
+	private void connectClients() {
 		while (!isClientCollected()) {
 			try {
 				connectClientsLoop();
@@ -78,7 +73,7 @@ public class ServerController {
 		}
 	}
 	
-	public void connectClientsLoop() throws IOException, 
+	private void connectClientsLoop() throws IOException, 
 										ClassNotFoundException {
 		Socket socket = getServerSocket().accept();
 		grabbedConnector = new Connector(socket);
@@ -99,7 +94,7 @@ public class ServerController {
 		}
 	}
 	
-	public boolean isClientCollected() {
+	private boolean isClientCollected() {
 		if (getClient1() != null && 
 				getClient2() != null && 
 				getConnector1() != null && 
@@ -109,7 +104,7 @@ public class ServerController {
 		return false;
 	}
 	
-	public void startGame() {
+	private void startGame() {
 		try {
 			actionsAndSettingsBeforeStartGame();
 		} catch (IOException e1) {
@@ -130,17 +125,15 @@ public class ServerController {
 		}
 	}
 	
-	public void actionsAndSettingsBeforeStartGame() throws IOException {
+	private void actionsAndSettingsBeforeStartGame() throws IOException {
 		endGame = false;
 		getClient1().setState(ClientState.STROKE);
 		getClient2().setState(ClientState.WAIT_STROKE);
 		getActiveConnector().send(ServerMessages.getStrokeMsg());
 		getNotActiveConnector().send(ServerMessages.getNotStrokeMsg());
-//		connector1.send(ServerMessages.getStrokeMsg());
-//		connector2.send(ServerMessages.getNotStrokeMsg());
 	}
 	
-	public void gameLoop() throws ClassNotFoundException, IOException {
+	private void gameLoop() throws ClassNotFoundException, IOException {
 		Message message = getActiveConnector().recieve();
 		if (!isValidGameMsg(message)) {
 			getNotActiveConnector().send(ServerMessages.getTKOWin());
@@ -159,13 +152,13 @@ public class ServerController {
 		}
 	}
 	
-	public void reactionOnLose() throws IOException {
+	private void reactionOnLose() throws IOException {
 		getNotActiveConnector().send(ServerMessages.getTKOWin());
 		getActiveConnector().send(ServerMessages.getTKOLoose()); // XXX maybe delete this row?
 		endGame = true;
 	}
 	
-	public void reactionOnStroke(Point point) throws IOException {
+	private void reactionOnStroke(Point point) throws IOException {
 		Field notActiveField = getNotActiveClient().getField();
 		
 		if (isWinningStroke(notActiveField, point)) {
@@ -179,7 +172,7 @@ public class ServerController {
 		}
 	}
 	
-	public void reactionOnMiss(Point point) throws IOException {
+	private void reactionOnMiss(Point point) throws IOException {
 		try {
 			getNotActiveConnector().send(ServerMessages.getStrokeMsg(point));
 		} catch (SocketException e) {
@@ -191,7 +184,7 @@ public class ServerController {
 		switchActiveAndNotActiveClient();
 	}
 	
-	public void reactionOnStrike(Point point) throws IOException {
+	private void reactionOnStrike(Point point) throws IOException {
 		int x = point.getX();
 		int y = point.getY();
 		getNotActiveClient().getField().setCell(x, y, TypeCell.STRIKE);
@@ -205,13 +198,13 @@ public class ServerController {
 		getActiveConnector().send(ServerMessages.getStrike());
 	}
 	
-	public void reactionOnWinStroke(Point point) throws IOException {// TODO catch SocketException
+	private void reactionOnWinStroke(Point point) throws IOException {// TODO catch SocketException
 		getNotActiveConnector().send(ServerMessages.getLoose(point));
 		getActiveConnector().send(ServerMessages.getWin());
 		endGame = true;
 	}
 	
-	public void reactionOnBigBang(Point point) throws IOException {
+	private void reactionOnBigBang(Point point) throws IOException {
 		int x = point.getX();
 		int y = point.getY();
 		getNotActiveClient().getField().setCell(x, y, TypeCell.STRIKE);
@@ -225,7 +218,7 @@ public class ServerController {
 		getActiveConnector().send(ServerMessages.getBigBang());
 	}
 	
-	public boolean isValidGameMsg(Message msg) {
+	private boolean isValidGameMsg(Message msg) {
 		if (msg == null) {
 			return false;
 		}
@@ -244,7 +237,7 @@ public class ServerController {
 		return true;
 	}
 	
-	public boolean isValidInit(Message clientMsg) {
+	private boolean isValidInit(Message clientMsg) {
 		if (clientMsg == null) {
 			throw new NullPointerException();
 		}
@@ -263,7 +256,7 @@ public class ServerController {
 		return true;
 	}
 	
-	public boolean isValidStroke(Message clientMsg) {
+	private boolean isValidStroke(Message clientMsg) {
 		if (clientMsg == null) {
 			throw new NullPointerException();
 		}
@@ -283,7 +276,7 @@ public class ServerController {
 		return true;
 	}	
 	
-	public void endGame() {
+	private void endGame() {
 		setClient1(null);
 		setClient2(null);
 		if (connector1 != null) connector1.close();
@@ -292,21 +285,21 @@ public class ServerController {
 		setConnector2(null);
 	}
 	
-	public Connector getActiveConnector() {
+	private Connector getActiveConnector() {
 		if (isClient1StrokeAndCliend2WaitStroke()) {
 			return connector1;
 		}
 		return connector2;
 	}
 	
-	public Connector getNotActiveConnector() {
+	private Connector getNotActiveConnector() {
 		if (isClient1StrokeAndCliend2WaitStroke()) {
 			return connector2;
 		}
 		return connector1;
 	}
 	
-	public ClientData getActiveClient() {
+	private ClientData getActiveClient() {
 		if (isClient1StrokeAndCliend2WaitStroke()) {
 			return getClient1();
 		}
@@ -314,14 +307,14 @@ public class ServerController {
 	}
 	
 	
-	public ClientData getNotActiveClient() {
+	private ClientData getNotActiveClient() {
 		if (isClient1StrokeAndCliend2WaitStroke()) {
 			return getClient2();
 		}
 		return getClient1();
 	}
 
-	public void switchActiveAndNotActiveClient() {
+	private void switchActiveAndNotActiveClient() {
 		if (getClient1().getState().equals(ClientState.WAIT_STROKE) &&
 				getClient2().getState().equals(ClientState.STROKE)) {
 			getClient1().setState(ClientState.STROKE);
@@ -335,7 +328,7 @@ public class ServerController {
 		}
 	}
 	
-	public boolean isClient1StrokeAndCliend2WaitStroke() throws RuntimeException {
+	private boolean isClient1StrokeAndCliend2WaitStroke() throws RuntimeException {
 		if (getClient1().getState().equals(ClientState.STROKE) && 
 				getClient2().getState().equals(ClientState.WAIT_STROKE)) {
 			return true;
@@ -346,7 +339,7 @@ public class ServerController {
 		throw new RuntimeException("Bad client state.");
 	}	
 		
-	public void sleepUnderErr() {
+	private void sleepUnderErr() {
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e1) {
