@@ -239,7 +239,7 @@ public class ClientController {
 	public void reactionOnHitInOurShip(Point point) {
 		getView().println("Hit on our ship!");
 		Field field = getView().getField(TypeField.OUR);
-		boolean isBigBang = FieldLogic.detectBigBang(field, point);
+		boolean isBigBang = FieldLogic.isBigBang(field, point);
 		getView().setCell(point, TypeCell.STRIKE, TypeField.OUR);
 		if (isBigBang) {
 			paintPaddedShip(point, TypeField.OUR);

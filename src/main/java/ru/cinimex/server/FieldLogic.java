@@ -6,7 +6,6 @@ package ru.cinimex.server;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
-
 import ru.cinimex.data.Field;
 import ru.cinimex.data.Point;
 import ru.cinimex.data.TypeCell;
@@ -34,7 +33,7 @@ public class FieldLogic {
 		return validateForType(TypeCell.SHIP, field);
 	}
 	
-	public static boolean isWinningStroke(Field field, Point point) {
+	public static boolean isWin(Field field, Point point) {
 		if (point == null || field == null) {
 			throw new NullPointerException();
 		}
@@ -76,7 +75,7 @@ public class FieldLogic {
 		return true;
 	}
 	
-	public static boolean detectBigBang(Field field, Point point) {
+	public static boolean isBigBang(Field field, Point point) {
 		if (field == null || point == null) {
 			throw new NullPointerException();
 		}
@@ -145,19 +144,24 @@ public class FieldLogic {
 		ArrayList<Point2D.Float> acc = new ArrayList<Point2D.Float>();
 		ArrayList<Point2D.Float> pointsOfShip;
 		pointsOfShip = grabShip(i, j, type, field, acc);
-
+		
+		final int NUMBER_OF_POINTS_IN_MINI_SHIP = 1;
+		final int NUMBER_OF_POINTS_IN_SMALL_SHIP = 2;
+		final int NUMBER_OF_POINTS_IN_MIDDLE_SHIP = 3;
+		final int NUMBER_OF_POINTS_IN_BIG_SHIP = 4;
+		
 		if (pointsOfShip.size() == 0) {
 			return;
-		} else if (pointsOfShip.size() == 1) {
+		} else if (pointsOfShip.size() == NUMBER_OF_POINTS_IN_MINI_SHIP) {
 			notCountedOneCellShips--;
 			shipsCells.addAll(pointsOfShip);
-		} else if (pointsOfShip.size() == 2) {
+		} else if (pointsOfShip.size() == NUMBER_OF_POINTS_IN_SMALL_SHIP) {
 			notCountedTwoCellShips--;
 			shipsCells.addAll(pointsOfShip);
-		} else if (pointsOfShip.size() == 3) {
+		} else if (pointsOfShip.size() == NUMBER_OF_POINTS_IN_MIDDLE_SHIP) {
 			notCountedThreeCellShips--;
 			shipsCells.addAll(pointsOfShip);
-		} else if (pointsOfShip.size() == 4) {
+		} else if (pointsOfShip.size() == NUMBER_OF_POINTS_IN_BIG_SHIP) {
 			notCountedFourCellShips--;
 			shipsCells.addAll(pointsOfShip);
 		} else {

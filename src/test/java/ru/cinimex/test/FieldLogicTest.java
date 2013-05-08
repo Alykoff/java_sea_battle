@@ -196,14 +196,14 @@ public class FieldLogicTest extends TestCase {
 		Field invalidWinFieldWithShip1 = new Field(invalidWinDataWithShip1);
 		
 		// valid field and ends point
-		assertTrue("validField1 faild", isWinningStroke(validWinField1, validPointWin1));
+		assertTrue("validField1 faild", isWin(validWinField1, validPointWin1));
 		// valid field, not end point
-		assertFalse("valide Field and unvalid point faild", isWinningStroke(validWinField1, invalidPointWin1));
+		assertFalse("valide Field and unvalid point faild", isWin(validWinField1, invalidPointWin1));
 		// invalid field, not end point
-		assertFalse(isWinningStroke(invalidWinFieldWithShip1, invalidPointWinWithShip1));
+		assertFalse(isWin(invalidWinFieldWithShip1, invalidPointWinWithShip1));
 		
 		try {
-			isWinningStroke(null, null);			
+			isWin(null, null);			
 			fail("NullPointerException did't catch");
 		} catch (NullPointerException e) {
 			// not catching.
@@ -305,26 +305,26 @@ public class FieldLogicTest extends TestCase {
 		Point invalidPointBigBang2 = new Point(0, 4);		
 		
 		try {
-			detectBigBang(null, null);
+			isBigBang(null, null);
 			fail("null test fail");
 		} catch(NullPointerException e) {
 			// not tracing
 		}
 		try {
-			detectBigBang(validFieldBigBang1, null);
+			isBigBang(validFieldBigBang1, null);
 			fail("null test fail");
 		} catch(NullPointerException e) {
 			// not tracing
 		}
 		try {
-			detectBigBang(null, validPointBigBang1);
+			isBigBang(null, validPointBigBang1);
 			fail("null test fail");
 		} catch(NullPointerException e) {
 			// not tracing
 		}		
-		assertTrue(detectBigBang(validFieldBigBang1, validPointBigBang1));
-		assertFalse(detectBigBang(invalidFieldBigBang1, invalidPointBigBang1));
-		assertFalse(detectBigBang(invalidFieldBigBang1, invalidPointBigBang2));
+		assertTrue(isBigBang(validFieldBigBang1, validPointBigBang1));
+		assertFalse(isBigBang(invalidFieldBigBang1, invalidPointBigBang1));
+		assertFalse(isBigBang(invalidFieldBigBang1, invalidPointBigBang2));
 		
 	}
 	
