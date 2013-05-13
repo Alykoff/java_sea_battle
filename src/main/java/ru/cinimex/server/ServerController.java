@@ -136,13 +136,6 @@ public class ServerController {
 	
 	private void gameLoop() throws ClassNotFoundException, IOException {
 		Message message = getActiveConnector().recieve();
-		if (!isValidGameMsg(message)) {
-			getNotActiveConnector().send(ServerMessages.getTKOWin());
-			getActiveConnector().send(ServerMessages.getTKOLoose());
-			endGame = true;
-			return;
-		}
-		
 		Field notActiveField = getNotActiveClient().getField();
 		ReactionCommandFactory commandFactory = new ReactionCommandFactory();
 		ServerReactionCommand command = commandFactory.getReactionCommand(notActiveField, message);
@@ -150,30 +143,15 @@ public class ServerController {
 				getActiveConnector(), 
 				getNotActiveClient(), 
 				getNotActiveConnector(), 
-				message.getBody());
+				message);
 		
 		if (isSwitchClient) {
 			switchActiveAndNotActiveClient();
 		}
 	}
 	
-	private boolean isValidGameMsg(Message msg) {
-		if (msg == null) {
-			return false;
-		}
-		Header header = msg.getHeader();
-		if (header == null) {
-			return false;
-		}
-		if (!header.equals(Header.LOOSE) && 
-				!header.equals(Header.TKO_LOOSE) &&
-				!header.equals(Header.STROKE)) {
-			return false;
-		}
-		if (header.equals(Header.STROKE) && !isValidStroke(msg)) {
-			return false;
-		}
-		return true;
+	public boolean isValidGameMsg(Message msg) {
+		return new ReactionCommandFactory().isValidGameMsg(msg);
 	}
 	
 	private boolean isValidInit(Message clientMsg) {
@@ -194,26 +172,6 @@ public class ServerController {
 		}
 		return true;
 	}
-	
-	private boolean isValidStroke(Message clientMsg) {
-		if (clientMsg == null) {
-			throw new NullPointerException();
-		}
-		if (!clientMsg.getHeader().equals(Header.STROKE) ||
-				(clientMsg.getBody() == null) ||
-				!(clientMsg.getBody() instanceof Point)) {
-			return false;
-		}
-		
-		Point point = (Point)clientMsg.getBody();
-		int x = point.getX();
-		int y = point.getY();
-		
-		if (!validateStroke(x, y)) {
-			return false;
-		}
-		return true;
-	}	
 	
 	private void endGame() {
 		setClient1(null);
@@ -296,7 +254,15 @@ public class ServerController {
 			e.printStackTrace();
 		}
 	}
-
+	
+	public void sendActiveClient(Message msg) throws IOException {
+		getActiveConnector().send(msg);
+	}
+	
+	public void sendNotActiveClient(Message msg) throws IOException {
+		getNotActiveConnector().send(msg);
+	}
+	
 	public boolean isEndGame() {
 		return endGame;
 	}

@@ -6,8 +6,8 @@ package ru.cinimex.server.commands;
 
 import java.io.IOException;
 import ru.cinimex.connector.Connector;
-import ru.cinimex.data.BodyMessage;
 import ru.cinimex.data.ClientData;
+import ru.cinimex.data.Message;
 import ru.cinimex.server.EndGameException;
 
 public interface ServerReactionCommand {
@@ -15,5 +15,5 @@ public interface ServerReactionCommand {
 			Connector activeConnector, 
 			ClientData notActiveClient, 
 			Connector notActiveConnector,
-			BodyMessage body) throws EndGameException, IOException;
+			Message msg) throws EndGameException, IOException;
 }

@@ -6,10 +6,9 @@ package ru.cinimex.server.commands;
 
 import java.io.IOException;
 import java.net.SocketException;
-
 import ru.cinimex.connector.Connector;
-import ru.cinimex.data.BodyMessage;
 import ru.cinimex.data.ClientData;
+import ru.cinimex.data.Message;
 import ru.cinimex.data.Point;
 import ru.cinimex.data.TypeCell;
 import ru.cinimex.server.EndGameException;
@@ -20,9 +19,11 @@ public class ReactionOnStrike extends ReactionOnStroke {
 	@Override
 	public boolean execute(ClientData activeClient, Connector activeConnector,
 			ClientData notActiveClient, Connector notActiveConnector,
-			BodyMessage body) throws EndGameException, IOException {
+			Message msg) throws EndGameException, IOException {
 		
-		if (body == null || !(body instanceof Point)) {
+		if (msg == null || 
+				msg.getBody() == null || 
+				!(msg.getBody() instanceof Point)) {
 			try {
 				notActiveConnector.send(ServerMessages.getTKOWin());
 			} catch (SocketException e) {
@@ -32,7 +33,7 @@ public class ReactionOnStrike extends ReactionOnStroke {
 			throw new EndGameException();
 		}
 		
-		Point point = (Point) body;		
+		Point point = (Point) msg.getBody();		
 		int x = point.getX();
 		int y = point.getY();
 		notActiveClient.getField().setCell(x, y, TypeCell.STRIKE);

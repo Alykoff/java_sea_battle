@@ -8,13 +8,18 @@ import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import ru.cinimex.data.ClientData;
+import ru.cinimex.data.ClientState;
 import ru.cinimex.data.TypeCell;
 import ru.cinimex.server.ServerController;
 import static org.mockito.Mockito.*;
 
 public class TestServerController extends TestCase {
 	int s, w, t, b, m;
-
+	ClientData nullClient;
+	ClientData notConnectClient;
+	
 	@Before
 	public void setUp() throws Exception {
 		s = TypeCell.SHIP.ordinal();
@@ -23,7 +28,8 @@ public class TestServerController extends TestCase {
 		b = TypeCell.BIG_BANG.ordinal();
 		m = TypeCell.MISS.ordinal();
 		
-		
+		notConnectClient = new ClientData(ClientState.NOT_CONNECT);
+		nullClient = null;
 	}
 
 	@After
@@ -34,6 +40,9 @@ public class TestServerController extends TestCase {
 	public void testValidInitMsg() {
 		ServerController controller = new ServerController();
 		ServerController spyController = spy(controller);
+		when(spyController.getClient1()).thenReturn(nullClient);
+		when(spyController.getClient2()).thenReturn(notConnectClient);
+		
 		controller.close();
 	}
 	
