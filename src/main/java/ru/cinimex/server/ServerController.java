@@ -12,10 +12,7 @@ import ru.cinimex.data.ClientData;
 import ru.cinimex.data.ClientState;
 import ru.cinimex.data.Field;
 import ru.cinimex.data.FieldInMessage;
-import ru.cinimex.data.Header;
 import ru.cinimex.data.Message;
-import ru.cinimex.data.Point;
-import static ru.cinimex.server.FieldLogic.*;
 import ru.cinimex.server.commands.ReactionCommandFactory;
 import ru.cinimex.server.commands.ServerReactionCommand;
 
@@ -26,7 +23,7 @@ public class ServerController {
 	private Connector connector1;
 	private Connector connector2;
 	private boolean endGame;
-	
+	private ServerMessageValidator msgValidator = new ServerMessageValidator();
 	public static final int SERVER_PORT = 9000;
 	
 	public ServerController() {
@@ -77,7 +74,7 @@ public class ServerController {
 		Socket socket = serverSocket.accept();
 		Connector grabbedConnector = new Connector(socket);
 		Message clientMsg = grabbedConnector.recieve();
-		if (!isValidInit(clientMsg)) {
+		if (!msgValidator.isValidInit(clientMsg)) {
 			System.out.println("bad init");
 			grabbedConnector.send(ServerMessages.getBadInitMsg());
 			return;
@@ -139,7 +136,7 @@ public class ServerController {
 		Field notActiveField = getNotActiveClient().getField();
 		ReactionCommandFactory commandFactory = new ReactionCommandFactory();
 		ServerReactionCommand command = commandFactory.getReactionCommand(notActiveField, message);
-		boolean isSwitchClient = command.execute(getActiveClient(), 
+		boolean isSwitchClient = command.execute(getActiveClient(),
 				getActiveConnector(), 
 				getNotActiveClient(), 
 				getNotActiveConnector(), 
@@ -148,29 +145,6 @@ public class ServerController {
 		if (isSwitchClient) {
 			switchActiveAndNotActiveClient();
 		}
-	}
-	
-	public boolean isValidGameMsg(Message msg) {
-		return new ReactionCommandFactory().isValidGameMsg(msg);
-	}
-	
-	private boolean isValidInit(Message clientMsg) {
-		if (clientMsg == null) {
-			throw new NullPointerException();
-		}
-		if (!clientMsg.getHeader().equals(Header.INIT) ||
-				(clientMsg.getBody() == null) ||
-				!(clientMsg.getBody() instanceof FieldInMessage)) {
-			return false;
-		}
-		
-		FieldInMessage fieldInBody = (FieldInMessage)clientMsg.getBody();
-		Field field = fieldInBody.getField();
-		
-		if (field == null || !isValidInitField(field)) {
-			return false;
-		}
-		return true;
 	}
 	
 	private void endGame() {
