@@ -5,8 +5,6 @@
 package ru.cinimex.client.commands;
 
 import java.util.HashMap;
-
-import ru.cinimex.client.ReactionOnNotStroke;
 import ru.cinimex.data.Header;
 
 public class ReactionClientCommandFactory {

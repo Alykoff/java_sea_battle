@@ -2,9 +2,8 @@
  * @author Alykov Gali
  * @date 13.05.2013
  */
-package ru.cinimex.client;
+package ru.cinimex.client.commands;
 
-import ru.cinimex.client.commands.ClientReactionCommand;
 import ru.cinimex.client.gui.View;
 import ru.cinimex.connector.Connector;
 import ru.cinimex.data.BodyMessage;

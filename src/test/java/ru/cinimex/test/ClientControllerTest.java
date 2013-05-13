@@ -4,27 +4,19 @@
  */
 package ru.cinimex.test;
 
-
 import junit.framework.TestCase;
 import static org.mockito.Mockito.*;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
-import org.junit.Test;
 
 import ru.cinimex.client.ClientController;
 import ru.cinimex.client.gui.View;
 import ru.cinimex.connector.Connector;
-import ru.cinimex.data.BodyMessage;
-import ru.cinimex.data.Header;
-import ru.cinimex.data.Point;
-import ru.cinimex.data.TypeCell;
-import ru.cinimex.data.TypeField;
-import ru.cinimex.server.ServerMessages;
 
+@Ignore
 public class ClientControllerTest extends TestCase {
 
 	ClientController controller;
@@ -52,7 +44,7 @@ public class ClientControllerTest extends TestCase {
 	public void tearDown() throws Exception {
 	}
 	
-	@Test
+/*	@Test
 	public void testProcessingGameBadInit() {
 		when(spyController.getConnector()).thenReturn(mockConnector);
 		when(spyController.recieve()).thenReturn(ServerMessages.getBadInitMsg());
@@ -118,30 +110,6 @@ public class ClientControllerTest extends TestCase {
 		when(spyController.recieve()).thenReturn(ServerMessages.getLoose(null));
 		spyController.processingGame();
 		verify(spyController, times(1)).reactionOnLoose(ServerMessages.getLoose(null).getHeader());
-		// ==== tko lose
-//		spyController = spy(controller);
-//		when(spyController.getConnector()).thenReturn(connector);
-//		when(spyController.recieve()).thenReturn(ServerMessages.getTKOLoose());
-//		spyController.processingGame();
-//		verify(spyController, times(1)).reactionOnLoose(ServerMessages.getTKOLoose().getHeader());
-//		spyController.exit();
-		// ==== strike
-//		spyController = spy(controller);
-//		when(spyController.getConnector()).thenReturn(connector);
-//		when(spyController.recieve()).thenReturn(ServerMessages.getStrike());
-//		spyController.processingGame();
-//		header = ServerMessages.getStrike().getHeader();
-//		body = ServerMessages.getStrike().getBody();
-//		verify(spyController, times(1)).reactionOnGoodShot(header, body);
-		// ===== stroke
-//		spyController = spy(controller);
-//		when(spyController.getConnector()).thenReturn(connector);
-//		when(spyController.recieve()).thenReturn(ServerMessages.getStrokeMsg());
-//		spyController.processingGame();
-//		header = ServerMessages.getStrokeMsg().getHeader();
-//		body = ServerMessages.getStrokeMsg().getBody();
-//		verify(spyController, times(1)).reactionOnStroke(header, body);
-		// not stroke
-	}
+	}*/
 	
 }
