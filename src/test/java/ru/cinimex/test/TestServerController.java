@@ -4,26 +4,13 @@
  */
 package ru.cinimex.test;
 
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketException;
 import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import static org.mockito.Mockito.*;
-import ru.cinimex.connector.Connector;
-import ru.cinimex.data.ClientData;
-import ru.cinimex.data.ClientState;
-import ru.cinimex.data.Field;
-import ru.cinimex.data.FieldInMessage;
-import ru.cinimex.data.Header;
-import ru.cinimex.data.Message;
-import ru.cinimex.data.Point;
 import ru.cinimex.data.TypeCell;
 import ru.cinimex.server.ServerController;
-import ru.cinimex.server.ServerMessages;
+import static org.mockito.Mockito.*;
 
 public class TestServerController extends TestCase {
 	int s, w, t, b, m;
@@ -42,6 +29,14 @@ public class TestServerController extends TestCase {
 	@After
 	public void tearDown() throws Exception {
 	}
+	
+	@Test
+	public void testValidInitMsg() {
+		ServerController controller = new ServerController();
+		ServerController spyController = spy(controller);
+		controller.close();
+	}
+	
 /*
 	@Test
 	public void testIsValidInit() {
