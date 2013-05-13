@@ -197,7 +197,7 @@ public class View extends JFrame {
 	}
 	
 	protected void onclickLoosing() {
-		controller.send(new Message(Header.TKO_LOOSE, null));
+		controller.send(new Message(Header.TKO_LOSE, null));
 		controller.close();
 		log.println("By your command of the fleet " +
 				"retreats.\nThe battle was lost!\n");

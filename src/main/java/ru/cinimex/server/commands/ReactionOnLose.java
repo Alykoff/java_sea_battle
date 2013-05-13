@@ -11,7 +11,7 @@ import ru.cinimex.data.Message;
 import ru.cinimex.server.EndGameException;
 import ru.cinimex.server.ServerMessages;
 
-public class ReactionOnLose implements ServerReactionCommand {
+public class ReactionOnLose extends ServerReactionCommand {
 
 	@Override
 	public boolean execute(ClientData activeClient, Connector activeConnector,

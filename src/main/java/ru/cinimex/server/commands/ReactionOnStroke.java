@@ -4,4 +4,4 @@
  */
 package ru.cinimex.server.commands;
 
-public abstract class ReactionOnStroke implements ServerReactionCommand {}
+public abstract class ReactionOnStroke extends ServerReactionCommand {}

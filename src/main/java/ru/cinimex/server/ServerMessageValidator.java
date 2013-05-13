@@ -41,8 +41,8 @@ public class ServerMessageValidator {
 		if (header == null) {
 			return false;
 		}
-		if (!header.equals(Header.LOOSE) && 
-				!header.equals(Header.TKO_LOOSE) &&
+		if (!header.equals(Header.LOSE) && 
+				!header.equals(Header.TKO_LOSE) &&
 				!header.equals(Header.STROKE)) {
 			return false;
 		}

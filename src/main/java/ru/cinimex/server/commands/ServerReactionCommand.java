@@ -10,8 +10,8 @@ import ru.cinimex.data.ClientData;
 import ru.cinimex.data.Message;
 import ru.cinimex.server.EndGameException;
 
-public interface ServerReactionCommand {
-	public boolean execute(ClientData activeClient, 
+public abstract class ServerReactionCommand {
+	abstract public boolean execute(ClientData activeClient, 
 			Connector activeConnector, 
 			ClientData notActiveClient, 
 			Connector notActiveConnector,

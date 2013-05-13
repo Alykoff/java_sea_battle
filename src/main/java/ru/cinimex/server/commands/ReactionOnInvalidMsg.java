@@ -12,7 +12,7 @@ import ru.cinimex.data.Message;
 import ru.cinimex.server.EndGameException;
 import ru.cinimex.server.ServerMessages;
 
-public class ReactionOnInvalidMsg implements ServerReactionCommand {
+public class ReactionOnInvalidMsg extends ServerReactionCommand {
 
 	@Override
 	public boolean execute(ClientData activeClient, Connector activeConnector,

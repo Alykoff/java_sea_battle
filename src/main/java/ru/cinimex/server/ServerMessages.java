@@ -50,7 +50,7 @@ public class ServerMessages {
 	}
 	
 	public static Message getTKOLoose() {
-		return new Message(Header.TKO_LOOSE, null);
+		return new Message(Header.TKO_LOSE, null);
 	}
 	
 	public static Message getWin() {
@@ -58,7 +58,7 @@ public class ServerMessages {
 	}
 	
 	public static Message getLoose(Point point) {
-		return new Message(Header.LOOSE, point);
+		return new Message(Header.LOSE, point);
 	}
 	
 	public static Message getBigBang() {

@@ -127,19 +127,19 @@ public class ServerController {
 		endGame = false;
 		getClient1().setState(ClientState.STROKE);
 		getClient2().setState(ClientState.WAIT_STROKE);
-		getActiveConnector().send(ServerMessages.getStrokeMsg());
-		getNotActiveConnector().send(ServerMessages.getNotStrokeMsg());
+		getConnector1().send(ServerMessages.getStrokeMsg());
+		getConnector2().send(ServerMessages.getNotStrokeMsg());
 	}
 	
 	private void gameLoop() throws ClassNotFoundException, IOException {
-		Message message = getActiveConnector().recieve();
-		Field notActiveField = getNotActiveClient().getField();
+		Message message = getActiveConnector(client1, client2, connector1, connector2).recieve();
+		Field notActiveField = getNotActiveClient(client1, client2).getField();
 		ReactionCommandFactory commandFactory = new ReactionCommandFactory();
 		ServerReactionCommand command = commandFactory.getReactionCommand(notActiveField, message);
-		boolean isSwitchClient = command.execute(getActiveClient(),
-				getActiveConnector(), 
-				getNotActiveClient(), 
-				getNotActiveConnector(), 
+		boolean isSwitchClient = command.execute(getActiveClient(client1, client2),
+				getActiveConnector(client1, client2, connector1, connector2),
+				getNotActiveClient(client1, client2),
+				getNotActiveConnector(client1, client2, connector1, connector2),
 				message);
 		
 		if (isSwitchClient) {
@@ -156,34 +156,46 @@ public class ServerController {
 		setConnector2(null);
 	}
 	
-	private Connector getActiveConnector() {
-		if (isClient1StrokeAndCliend2WaitStroke()) {
-			return getConnector1();
+	private Connector getActiveConnector(ClientData client1, ClientData cleint2, 
+			Connector connector1, Connector connector2) {
+		if (isClient1StrokeAndCliend2WaitStroke(client1, client2)) {
+			return connector1;
 		}
-		return getConnector2();
+		return connector2;
 	}
 	
-	private Connector getNotActiveConnector() {
-		if (isClient1StrokeAndCliend2WaitStroke()) {
-			return getConnector2();
+	private Connector getNotActiveConnector(ClientData client1, ClientData client2,
+			Connector connector1, Connector connector2) {
+		if (isClient1StrokeAndCliend2WaitStroke(client1, client2)) {
+			return connector2;
 		}
-		return getConnector1();
+		return connector1;
 	}
 	
-	private ClientData getActiveClient() {
-		if (isClient1StrokeAndCliend2WaitStroke()) {
-			return getClient1();
+	private ClientData getActiveClient(ClientData client1, ClientData client2) {
+		if (isClient1StrokeAndCliend2WaitStroke(client1, client2)) {
+			return client1;
 		}
-		return getClient2();
+		return client2;
 	}
 	
-	
-	private ClientData getNotActiveClient() {
-		if (isClient1StrokeAndCliend2WaitStroke()) {
-			return getClient2();
+	private ClientData getNotActiveClient(ClientData client1, ClientData client2) {
+		if (isClient1StrokeAndCliend2WaitStroke(client1, client2)) {
+			return client2;
 		}
-		return getClient1();
+		return client1;
 	}
+	
+	private boolean isClient1StrokeAndCliend2WaitStroke(ClientData client1, ClientData client2) throws RuntimeException {
+		if (client1.getState().equals(ClientState.STROKE) && 
+				client2.getState().equals(ClientState.WAIT_STROKE)) {
+			return true;
+		} else if (client1.getState().equals(ClientState.WAIT_STROKE) &&
+				client2.getState().equals(ClientState.STROKE)) {
+			return false;
+		}
+		throw new RuntimeException("Bad client state.");
+	}	
 
 	private void switchActiveAndNotActiveClient() {
 		if (getClient1().getState().equals(ClientState.WAIT_STROKE) &&
@@ -199,17 +211,6 @@ public class ServerController {
 		}
 	}
 	
-	private boolean isClient1StrokeAndCliend2WaitStroke() throws RuntimeException {
-		if (getClient1().getState().equals(ClientState.STROKE) && 
-				getClient2().getState().equals(ClientState.WAIT_STROKE)) {
-			return true;
-		} else if (getClient1().getState().equals(ClientState.WAIT_STROKE) &&
-				getClient2().getState().equals(ClientState.STROKE)) {
-			return false;
-		}
-		throw new RuntimeException("Bad client state.");
-	}	
-		
 	private void sleepUnderErr() {
 		try {
 			Thread.sleep(2000);
@@ -229,13 +230,13 @@ public class ServerController {
 		}
 	}
 	
-	public void sendActiveClient(Message msg) throws IOException {
-		getActiveConnector().send(msg);
-	}
+//	public void sendActiveClient(Message msg) throws IOException {
+//		getActiveConnector().send(msg);
+//	}
 	
-	public void sendNotActiveClient(Message msg) throws IOException {
-		getNotActiveConnector().send(msg);
-	}
+//	public void sendNotActiveClient(Message msg) throws IOException {
+//		getNotActiveConnector().send(msg);
+//	}
 	
 	public boolean isEndGame() {
 		return endGame;

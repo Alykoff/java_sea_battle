@@ -21,7 +21,7 @@ public class ReactionCommandFactory {
 			return new ReactionOnInvalidMsg();
 		}
 		Header header = msg.getHeader();
-		if (header.equals(Header.TKO_LOOSE) || header.equals(Header.LOOSE)) {
+		if (header.equals(Header.TKO_LOSE) || header.equals(Header.LOSE)) {
 			return new ReactionOnLose();
 		} else if (header.equals(Header.STROKE)) {
 			Point point = (Point) msg.getBody();

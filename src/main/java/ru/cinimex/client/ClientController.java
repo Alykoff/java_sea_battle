@@ -96,7 +96,7 @@ public class ClientController {
 			reactionOnBadInit();
 		} else if (header.equals(Header.TKO_WIN) || header.equals(Header.WIN)) {
 			reactionOnWin(header);
-		} else if (header.equals(Header.TKO_LOOSE) || header.equals(Header.LOOSE)) {
+		} else if (header.equals(Header.TKO_LOSE) || header.equals(Header.LOSE)) {
 			reactionOnLoose(header);
 		} else if (header.equals(Header.BIG_BANG) || header.equals(Header.STRIKE)) {
 			reactionOnGoodShot(header, body);
@@ -105,21 +105,20 @@ public class ClientController {
 		} else if (header.equals(Header.NOT_STROKE)) {
 			reactionOnStrokeTabu(body);
 		}
-	}
+	}	
 	
-	
-	public void reactionOnBadInit() {
+	public void reactionOnBadInit() {// XXX
 		getView().println("Bad init.");
 		interrupt = true;
 		endGame();
 	}
 	
-	public void reactionOnBadStroke() {
-		getView().println("bad stroke.");
-		waitAndReactionToStroke();
-	}
+//	public void reactionOnBadStroke() {
+//		getView().println("bad stroke.");
+//		waitAndReactionToStroke();
+//	}
 	
-	public void reactionOnStroke(Header header, BodyMessage body) {
+	public void reactionOnStroke(Header header, BodyMessage body) {// XXX
 		if (body != null || body instanceof Point) {
 			Point point = (Point) body;
 			reactionOnSuccessfulStroke(point);
@@ -128,13 +127,13 @@ public class ClientController {
 		waitAndReactionToStroke();
 	}
 	
-	public void reactionOnSuccessfulStroke(Point point) {
+	public void reactionOnSuccessfulStroke(Point point) {// XXX
 		if (getView().getCell(point, TypeField.OUR).equals(TypeCell.WATER)) {
 			getView().setCell(point, TypeCell.MISS, TypeField.OUR);
 		}		
 	}
 	
-	public void reactionOnGoodShot(Header header, BodyMessage body) {
+	public void reactionOnGoodShot(Header header, BodyMessage body) { // XXX
 		final Point stroke = getView().getLastStroke();
 		if (stroke == null) {
 			getView().println("Upps! We have problem! " +
@@ -147,13 +146,13 @@ public class ClientController {
 			paintPaddedShip(stroke, TypeField.OPPONENT);
 			getView().println("Yeeh! You blew up this ship!");
 		} else {
-			getView().println("Good shot!");	
+			getView().println("Good shot!");
 		}
 		getView().cleanLastStroke();
 		waitAndReactionToStroke();
 	}
 	
-	public void waitAndReactionToStroke() {
+	public void waitAndReactionToStroke() { // XXX
 		long beginTime = new Date().getTime();
 		getData().setState(ClientState.STROKE);
 		getView().cleanLastStroke();
@@ -185,7 +184,7 @@ public class ClientController {
 		getView().switchToEndGame();
 	}
 	
-	public void paintPaddedShip(Point point, TypeField typeField) {
+	public void paintPaddedShip(Point point, TypeField typeField) {// XXX
 		if (point == null || typeField == null) {
 			throw new NullPointerException();
 		}
@@ -209,23 +208,23 @@ public class ClientController {
 				paintPaddedShip(new Point(i, j), typeField);
 			}
 		}
-		
-	}
-		
-	public void reactionOnOfferToStroke(BodyMessage body) {
-		getView().println("Your turn began.");
-		if (body != null && (body instanceof Point)) {
-			getView().println("Your opponent missed!");
-			Point point = (Point) body;
-			TypeCell cellXY = getView().getCell(point, TypeField.OUR);
-			if (cellXY.equals(TypeCell.WATER) || cellXY.equals(TypeCell.MISS)) {
-				getView().setCell(point, TypeCell.MISS, TypeField.OUR);
-			}
-		}							
-		waitAndReactionToStroke();
+	
 	}
 	
-	public void reactionOnStrokeTabu(BodyMessage body) {
+//	public void reactionOnOfferToStroke(BodyMessage body) {
+//		getView().println("Your turn began.");
+//		if (body != null && (body instanceof Point)) {
+//			getView().println("Your opponent missed!");
+//			Point point = (Point) body;
+//			TypeCell cellXY = getView().getCell(point, TypeField.OUR);
+//			if (cellXY.equals(TypeCell.WATER) || cellXY.equals(TypeCell.MISS)) {
+//				getView().setCell(point, TypeCell.MISS, TypeField.OUR);
+//			}
+//		}							
+//		waitAndReactionToStroke();
+//	}
+	
+	public void reactionOnStrokeTabu(BodyMessage body) { // XXX
 		getView().println("Please wait for the opponent's turn.");
 		getData().setState(ClientState.WAIT);
 		if (body != null && (body instanceof Point)) {
@@ -236,7 +235,7 @@ public class ClientController {
 		}
 	}
 	
-	public void reactionOnHitInOurShip(Point point) {
+	public void reactionOnHitInOurShip(Point point) {// XXX
 		getView().println("Hit on our ship!");
 		Field field = getView().getField(TypeField.OUR);
 		boolean isBigBang = FieldLogic.isBigBang(field, point);
@@ -246,7 +245,7 @@ public class ClientController {
 		}
 	}
 	
-	public void reactionOnMiss() {
+	public void reactionOnMiss() { // XXX
 		Point stroke = getView().getLastStroke();
 		TypeCell  typeCellUnderStrokePoint = getView().getCell(stroke, TypeField.OPPONENT);
 		if (typeCellUnderStrokePoint.equals(TypeCell.WATER)) {
@@ -255,7 +254,7 @@ public class ClientController {
 		getView().cleanLastStroke();
 	}
 	
-	public void reactionOnWin(Header header) {
+	public void reactionOnWin(Header header) { // XXX
 		if (header.equals(Header.TKO_WIN)) {
 			getView().println("Congratulations! You win! " +
 					"Enemy fleet fled.");
@@ -269,10 +268,10 @@ public class ClientController {
 		endGame();
 	}
 	
-	public void reactionOnLoose(Header header) {
-		if (header.equals(Header.TKO_LOOSE)) {
+	public void reactionOnLoose(Header header) { // XXX
+		if (header.equals(Header.TKO_LOSE)) {
 			getView().println("Oh! TKO lose. We lose!");
-		} else if (header.equals(Header.LOOSE)) {
+		} else if (header.equals(Header.LOSE)) {
 			getView().println("Oh! We lose!");
 		} else {
 			throw new RuntimeException("Bad header.");
