@@ -19,7 +19,7 @@ public class ReactionOnMiss extends ReactionOnStroke {
 	public boolean execute(ClientData activeClient, Connector activeConnector,
 			ClientData notActiveClient, Connector notActiveConnector,
 			Message msg) throws EndGameException, IOException {
-
+		
 		if (msg == null || 
 				msg.getBody() == null || 
 				!(msg.getBody() instanceof Point)) {

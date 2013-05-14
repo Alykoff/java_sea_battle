@@ -4,21 +4,31 @@
  */
 package ru.cinimex.test;
 
+import java.io.IOException;
+import java.net.Socket;
+
 import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
-
+import ru.cinimex.client.ClientMessages;
+import ru.cinimex.connector.Connector;
 import ru.cinimex.data.ClientData;
 import ru.cinimex.data.ClientState;
+import ru.cinimex.data.Field;
+import ru.cinimex.data.FieldInMessage;
+import ru.cinimex.data.Message;
 import ru.cinimex.data.TypeCell;
 import ru.cinimex.server.ServerController;
 import static org.mockito.Mockito.*;
 
+@Ignore
 public class TestServerController extends TestCase {
 	int s, w, t, b, m;
 	ClientData nullClient;
 	ClientData notConnectClient;
+	Message validInitMsg;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -28,6 +38,22 @@ public class TestServerController extends TestCase {
 		b = TypeCell.BIG_BANG.ordinal();
 		m = TypeCell.MISS.ordinal();
 		
+		int[][] validInitData1 = new int[][] {
+				new int[] {s, s, s, s, w, s, s, s, w, w},
+				new int[] {w, w, w, w, w, w, w, w, w, w},
+				new int[] {s, s, s, w, s, s, w, s, s, w},
+				new int[] {w, w, w, w, w, w, w, w, w, w},
+				new int[] {s, s, w, w, w, w, s, w, s, w},
+				new int[] {w, w, w, w, w, w, w, w, w, w},
+				new int[] {s, w, s, w, w, w, w, w, w, w},
+				new int[] {w, w, w, w, w, w, w, w, w, w},
+				new int[] {w, w, w, w, w, w, w, w, w, w},
+				new int[] {w, w, w, w, w, w, w, w, w, w}
+		};
+		Field validInitField1 = new Field(validInitData1);
+		FieldInMessage validFieldInMsg1 = new FieldInMessage(validInitField1);
+		validInitMsg = new ClientMessages().getInit(validFieldInMsg1);
+		
 		notConnectClient = new ClientData(ClientState.NOT_CONNECT);
 		nullClient = null;
 	}
@@ -36,12 +62,22 @@ public class TestServerController extends TestCase {
 	public void tearDown() throws Exception {
 	}
 	
+	@Ignore
 	@Test
-	public void testValidInitMsg() {
+	public void testValidInitMsg() throws ClassCastException, IOException, ClassNotFoundException {
 		ServerController controller = new ServerController();
 		ServerController spyController = spy(controller);
+
+		Connector connector1 = new Connector(new Socket());
+		Connector spyConnector = spy(connector1);
+		when(spyConnector.recieve()).thenReturn(validInitMsg);
+//		when(spyController.)
+		when(spyController.getConnector1()).thenReturn(spyConnector);
+		when(spyController.getConnector2()).thenReturn(spyConnector);
+		
 		when(spyController.getClient1()).thenReturn(nullClient);
 		when(spyController.getClient2()).thenReturn(notConnectClient);
+		
 		
 		controller.close();
 	}

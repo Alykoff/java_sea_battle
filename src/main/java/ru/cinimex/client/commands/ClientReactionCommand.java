@@ -6,14 +6,13 @@ package ru.cinimex.client.commands;
 
 import java.io.IOException;
 import java.util.Date;
-
+import ru.cinimex.client.ClientMessages;
 import ru.cinimex.client.gui.View;
 import ru.cinimex.connector.Connector;
 import ru.cinimex.data.BodyMessage;
 import ru.cinimex.data.ClientData;
 import ru.cinimex.data.ClientState;
 import ru.cinimex.data.Field;
-import ru.cinimex.data.Header;
 import ru.cinimex.data.Message;
 import ru.cinimex.data.Point;
 import ru.cinimex.data.TypeCell;
@@ -22,6 +21,7 @@ import ru.cinimex.server.EndGameException;
 
 public abstract class ClientReactionCommand {
 	protected final int MAX_TIME_STROKE = 3 * 60 * 1000;
+	protected final ClientMessages msgFactory = new ClientMessages();
 	
 	abstract public void execute(BodyMessage body, View view, 
 							Connector connector, ClientData data);
@@ -53,7 +53,7 @@ public abstract class ClientReactionCommand {
 	
 	protected void sendStroke(View view, ClientData data, Connector connector) {
 		Point stroke = waitAndReactionToStroke(view, data, connector);
-		send(new Message(Header.STROKE, stroke), connector);
+		send(msgFactory.getStroke(stroke), connector);
 	}
 	
 	public void send(Message msg, Connector connector) throws RuntimeException {

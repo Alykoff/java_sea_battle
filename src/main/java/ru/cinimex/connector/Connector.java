@@ -44,7 +44,7 @@ public class Connector {
 	
 	public Message recieve() throws IOException, ClassNotFoundException, ClassCastException {
 		
-		System.out.println("\n\n====================Resieve==================");
+		System.out.println("\n\n=============Resieve=============");
 		System.out.println(new java.util.Date().toString());
 		
 		InputStream inputStream = null;
@@ -55,7 +55,7 @@ public class Connector {
 		
 		Message msg = (Message) objInputStream.readObject();
 		System.out.println(msg.toString());
-		System.out.println("=============================================");
+		System.out.println("===================================");
 		
 		return msg;		
 	}

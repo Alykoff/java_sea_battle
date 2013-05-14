@@ -27,7 +27,7 @@ import ru.cinimex.data.TypeField;
 
 public abstract class View extends JFrame {
 	private static final long serialVersionUID = 7308962792053719857L;
-	public static final int DEFAULT_HEIGHT = 400;
+	public static final int DEFAULT_HEIGHT = 500;
 	public static final int DEFAULT_WIDTH = 500;
 	protected final String DEFAULT_TITLE = "Sea battle";	
 	protected final String DEFAULT_PORT = "9000";
@@ -50,7 +50,6 @@ public abstract class View extends JFrame {
 		new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 	};
 	private Point lastStroke;
-//	protected final ClientController controller;
 	protected final LogComponent log;
 	private final Panel panelTable;
 	private final Panel panelOpponentTable;
@@ -90,7 +89,7 @@ public abstract class View extends JFrame {
 		setResizable(false);
 	}
 	
-	public void switchToStartGameMode() {
+	public void startGameMode() {
 		panelOpponentTable.setVisible(true);
 		startButton.setEnabled(false);
 		endButton.setEnabled(true);
@@ -206,7 +205,7 @@ public abstract class View extends JFrame {
 		}
 	}
 	
-	public void switchToEndGame() {
+	public void endGame() {
 		log.println("Ending game...");
 		panelOpponentTable.setVisible(false);
 		panelOpponentTable.cleanField();

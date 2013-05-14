@@ -24,8 +24,6 @@ public class ReactionOnBigBang extends ClientReactionCommand {
 			view.println("Upps! We have problem! " +
 					"Sorry. End game(");
 			throw new EndGameException();
-//			interrupt = true;
-//			endGame();
 		}
 		view.setCell(stroke, TypeCell.STRIKE, TypeField.OPPONENT);
 		paintPaddedShip(view, stroke, TypeField.OPPONENT);

@@ -27,6 +27,7 @@ public class ClientController {
 	private ClientData data;
 	protected boolean interrupt = false;
 	protected final int MAX_TIME_STROKE = 3 * 60 * 1000;
+	protected final ClientMessages msgFactory = new ClientMessages();
 	
 	public ClientController() {
 		setData(new ClientData(ClientState.NOT_CONNECT));
@@ -44,11 +45,11 @@ public class ClientController {
 			
 			@Override
 			protected void onclickLoosing() {
-				controller.send(new Message(Header.TKO_LOSE, null));
+				controller.send(msgFactory.getTKOLose());
 				controller.close();
 				log.println("By your command of the fleet " +
 						"retreats.\nThe battle was lost!\n");
-				switchToEndGame();
+				endGame();
 			}
 		});
 		this.view.setVisible(true);
@@ -70,7 +71,7 @@ public class ClientController {
 					connect(url, port);
 					Message msg = getInitMsg();
 					send(msg);
-					getView().switchToStartGameMode();
+					getView().startGameMode();
 					getData().setState(ClientState.WAIT);
 					processingGame();
 				}
@@ -87,8 +88,7 @@ public class ClientController {
 	private Message getInitMsg() {
 		Field field = getView().getField(TypeField.OUR);
 		FieldInMessage body = new FieldInMessage(field);
-		Header header = Header.INIT;
-		return new Message(header, body);
+		return msgFactory.getInit(body);
 	}
 	
 	public void processingGame() {
@@ -117,7 +117,7 @@ public class ClientController {
 	public void endGame() {
 		interrupt = true;
 		getData().setState(ClientState.NOT_CONNECT);
-		getView().switchToEndGame();
+		getView().endGame();
 	}
 	
 	public void connect(String url, String port) throws IllegalArgumentException,

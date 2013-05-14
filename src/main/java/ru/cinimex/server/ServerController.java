@@ -24,6 +24,7 @@ public class ServerController {
 	private Connector connector2;
 	private boolean endGame;
 	private ServerMessageValidator msgValidator = new ServerMessageValidator();
+	private SelectorClientsAndConnectors selector = new SelectorClientsAndConnectors();
 	public static final int SERVER_PORT = 9000;
 	
 	public ServerController() {
@@ -37,7 +38,7 @@ public class ServerController {
 	public static void main(String[] args) {
 		new ServerController().startServer();
 	}
-
+	
 	public void startServer() {
 		System.out.println("Starting sever...");
 		while (true) {
@@ -132,18 +133,26 @@ public class ServerController {
 	}
 	
 	private void gameLoop() throws ClassNotFoundException, IOException {
-		Message message = getActiveConnector(client1, client2, connector1, connector2).recieve();
-		Field notActiveField = getNotActiveClient(client1, client2).getField();
+		ClientData activeClient = selector.getActiveClient(client1, client2);
+		ClientData notActiveClient = selector.getNotActiveClient(client1, client2);
+		Connector activeConnector = 
+			selector.getActiveConnector(client1, client2, connector1, connector2);
+		Connector notActiveConnector = 
+			selector.getNotActiveConnector(client1, client2, connector1, connector2);
+		
+		Message message = activeConnector.recieve();
+		
+		Field notActiveField = notActiveClient.getField();
 		ReactionCommandFactory commandFactory = new ReactionCommandFactory();
 		ServerReactionCommand command = commandFactory.getReactionCommand(notActiveField, message);
-		boolean isSwitchClient = command.execute(getActiveClient(client1, client2),
-				getActiveConnector(client1, client2, connector1, connector2),
-				getNotActiveClient(client1, client2),
-				getNotActiveConnector(client1, client2, connector1, connector2),
+		boolean isSwitchClient = command.execute(activeClient,
+				activeConnector,
+				notActiveClient,
+				notActiveConnector,
 				message);
 		
 		if (isSwitchClient) {
-			switchActiveAndNotActiveClient();
+			selector.switchActiveAndNotActiveClient(client1, client2);
 		}
 	}
 	
@@ -154,61 +163,6 @@ public class ServerController {
 		if (getConnector2() !=  null) getConnector2().close();
 		setConnector1(null);
 		setConnector2(null);
-	}
-	
-	private Connector getActiveConnector(ClientData client1, ClientData cleint2, 
-			Connector connector1, Connector connector2) {
-		if (isClient1StrokeAndCliend2WaitStroke(client1, client2)) {
-			return connector1;
-		}
-		return connector2;
-	}
-	
-	private Connector getNotActiveConnector(ClientData client1, ClientData client2,
-			Connector connector1, Connector connector2) {
-		if (isClient1StrokeAndCliend2WaitStroke(client1, client2)) {
-			return connector2;
-		}
-		return connector1;
-	}
-	
-	private ClientData getActiveClient(ClientData client1, ClientData client2) {
-		if (isClient1StrokeAndCliend2WaitStroke(client1, client2)) {
-			return client1;
-		}
-		return client2;
-	}
-	
-	private ClientData getNotActiveClient(ClientData client1, ClientData client2) {
-		if (isClient1StrokeAndCliend2WaitStroke(client1, client2)) {
-			return client2;
-		}
-		return client1;
-	}
-	
-	private boolean isClient1StrokeAndCliend2WaitStroke(ClientData client1, ClientData client2) throws RuntimeException {
-		if (client1.getState().equals(ClientState.STROKE) && 
-				client2.getState().equals(ClientState.WAIT_STROKE)) {
-			return true;
-		} else if (client1.getState().equals(ClientState.WAIT_STROKE) &&
-				client2.getState().equals(ClientState.STROKE)) {
-			return false;
-		}
-		throw new RuntimeException("Bad client state.");
-	}	
-
-	private void switchActiveAndNotActiveClient() {
-		if (getClient1().getState().equals(ClientState.WAIT_STROKE) &&
-				getClient2().getState().equals(ClientState.STROKE)) {
-			getClient1().setState(ClientState.STROKE);
-			getClient2().setState(ClientState.WAIT_STROKE);
-		} else if (getClient2().getState().equals(ClientState.WAIT_STROKE) &&
-				getClient1().getState().equals(ClientState.STROKE)) {
-			getClient1().setState(ClientState.WAIT_STROKE);
-			getClient2().setState(ClientState.STROKE);
-		} else {
-			throw new RuntimeException("Illegal case.");
-		}
 	}
 	
 	private void sleepUnderErr() {
@@ -230,14 +184,6 @@ public class ServerController {
 		}
 	}
 	
-//	public void sendActiveClient(Message msg) throws IOException {
-//		getActiveConnector().send(msg);
-//	}
-	
-//	public void sendNotActiveClient(Message msg) throws IOException {
-//		getNotActiveConnector().send(msg);
-//	}
-	
 	public boolean isEndGame() {
 		return endGame;
 	}
@@ -245,38 +191,37 @@ public class ServerController {
 	public void setEndGame(boolean endGame) {
 		this.endGame = endGame;
 	}
-
+	
 	public void setClient1(ClientData client1) {
 		this.client1 = client1;
 	}
-
+	
 	public ClientData getClient1() {
 		return client1;
 	}
-
+	
 	public void setClient2(ClientData client2) {
 		this.client2 = client2;
 	}
-
+	
 	public ClientData getClient2() {
 		return client2;
 	}
-
+	
 	public void setConnector1(Connector connector1) {
 		this.connector1 = connector1;
 	}
-
+	
 	public Connector getConnector1() {
 		return connector1;
 	}
-
+	
 	public void setConnector2(Connector connector2) {
 		this.connector2 = connector2;
 	}
-
+	
 	public Connector getConnector2() {
 		return connector2;
 	}
 	
 }
-
