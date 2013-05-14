@@ -5,12 +5,9 @@
 package ru.cinimex.test;
 
 import java.io.IOException;
-import java.net.Socket;
-
 import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import ru.cinimex.client.ClientMessages;
 import ru.cinimex.connector.Connector;
@@ -19,16 +16,19 @@ import ru.cinimex.data.ClientState;
 import ru.cinimex.data.Field;
 import ru.cinimex.data.FieldInMessage;
 import ru.cinimex.data.Message;
+import ru.cinimex.data.Point;
 import ru.cinimex.data.TypeCell;
 import ru.cinimex.server.ServerController;
+import ru.cinimex.server.commands.ReactionCommandFactory;
 import static org.mockito.Mockito.*;
 
-@Ignore
+// @Ignore
 public class TestServerController extends TestCase {
 	int s, w, t, b, m;
-	ClientData nullClient;
-	ClientData notConnectClient;
-	Message validInitMsg;
+	ClientData nullClient, notConnectClient,
+		activeClient, notActiveClient;
+	Message validInitMsg, validStrokeMsg;
+	ReactionCommandFactory serverCommandFactory;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -54,31 +54,43 @@ public class TestServerController extends TestCase {
 		FieldInMessage validFieldInMsg1 = new FieldInMessage(validInitField1);
 		validInitMsg = new ClientMessages().getInit(validFieldInMsg1);
 		
+		Point point = new Point(0, 0);
+		validStrokeMsg = new ClientMessages().getStroke(point);
+		
+		activeClient = new ClientData(ClientState.STROKE);
+		activeClient.setField(validInitField1);
+		notActiveClient = new ClientData(ClientState.WAIT_STROKE);
+		notActiveClient.setField(validInitField1);
 		notConnectClient = new ClientData(ClientState.NOT_CONNECT);
 		nullClient = null;
+		
+		serverCommandFactory = new ReactionCommandFactory();
 	}
 
 	@After
 	public void tearDown() throws Exception {
 	}
 	
-	@Ignore
 	@Test
 	public void testValidInitMsg() throws ClassCastException, IOException, ClassNotFoundException {
 		ServerController controller = new ServerController();
 		ServerController spyController = spy(controller);
-
-		Connector connector1 = new Connector(new Socket());
-		Connector spyConnector = spy(connector1);
-		when(spyConnector.recieve()).thenReturn(validInitMsg);
-//		when(spyController.)
-		when(spyController.getConnector1()).thenReturn(spyConnector);
-		when(spyController.getConnector2()).thenReturn(spyConnector);
 		
-		when(spyController.getClient1()).thenReturn(nullClient);
-		when(spyController.getClient2()).thenReturn(notConnectClient);
+		Connector mockConnector = mock(Connector.class);
+		when(mockConnector.recieve()).thenReturn(validStrokeMsg);
 		
+		when(spyController.getConnector1()).thenReturn(mockConnector);
+		when(spyController.getConnector2()).thenReturn(mockConnector);
 		
+		when(spyController.getClient1()).thenReturn(activeClient);
+		when(spyController.getClient2()).thenReturn(notActiveClient);
+		when(spyController.isEndGame()).thenReturn(true);
+		when(spyController.isStop()).thenReturn(true);
+		when(spyController.getCommandFactory()).thenReturn(serverCommandFactory);
+		
+		spyController.startServer();
+		
+		assertTrue(notActiveClient.getField().getCell(0, 0) == TypeCell.STRIKE.ordinal());
 		controller.close();
 	}
 	

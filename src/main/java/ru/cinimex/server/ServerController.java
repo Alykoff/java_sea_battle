@@ -25,6 +25,8 @@ public class ServerController {
 	private boolean endGame;
 	private ServerMessageValidator msgValidator = new ServerMessageValidator();
 	private SelectorClientsAndConnectors selector = new SelectorClientsAndConnectors();
+	private ReactionCommandFactory commandFactory = new ReactionCommandFactory();
+	private boolean stop;
 	public static final int SERVER_PORT = 9000;
 	
 	public ServerController() {
@@ -41,7 +43,7 @@ public class ServerController {
 	
 	public void startServer() {
 		System.out.println("Starting sever...");
-		while (true) {
+		do {
 			try {
 				System.out.println("Connect clients...");
 				connectClients();
@@ -53,9 +55,9 @@ public class ServerController {
 				endGame();
 				System.out.println("Game over.");
 			}
-		}
+		} while (!isStop());
 	}
-		
+	
 	private void connectClients() {
 		while (!isClientCollected()) {
 			try {
@@ -109,7 +111,7 @@ public class ServerController {
 			setEndGame(true);
 			return;
 		}
-		while (!isEndGame()) {
+		do {
 			try {
 				gameLoop();
 			} catch (EndGameException e) {
@@ -121,7 +123,7 @@ public class ServerController {
 				e.printStackTrace();
 				setEndGame(true);
 			}
-		}
+		} while (!isEndGame());
 	}
 	
 	private void actionsAndSettingsBeforeStartGame() throws IOException {
@@ -133,18 +135,18 @@ public class ServerController {
 	}
 	
 	private void gameLoop() throws ClassNotFoundException, IOException {
-		ClientData activeClient = selector.getActiveClient(client1, client2);
-		ClientData notActiveClient = selector.getNotActiveClient(client1, client2);
+		ClientData activeClient = selector.getActiveClient(getClient1(), getClient2());
+		ClientData notActiveClient = selector.getNotActiveClient(getClient1(), getClient2());
 		Connector activeConnector = 
-			selector.getActiveConnector(client1, client2, connector1, connector2);
+			selector.getActiveConnector(getClient1(), getClient2(), getConnector1(), getConnector2());
 		Connector notActiveConnector = 
-			selector.getNotActiveConnector(client1, client2, connector1, connector2);
+			selector.getNotActiveConnector(getClient1(), getClient2(), getConnector1(), getConnector2());
 		
 		Message message = activeConnector.recieve();
 		
 		Field notActiveField = notActiveClient.getField();
-		ReactionCommandFactory commandFactory = new ReactionCommandFactory();
-		ServerReactionCommand command = commandFactory.getReactionCommand(notActiveField, message);
+		ServerReactionCommand command = 
+			getCommandFactory().getReactionCommand(notActiveField, message);
 		boolean isSwitchClient = command.execute(activeClient,
 				activeConnector,
 				notActiveClient,
@@ -152,7 +154,7 @@ public class ServerController {
 				message);
 		
 		if (isSwitchClient) {
-			selector.switchActiveAndNotActiveClient(client1, client2);
+			selector.switchActiveAndNotActiveClient(getClient1(), getClient2());
 		}
 	}
 	
@@ -223,5 +225,20 @@ public class ServerController {
 	public Connector getConnector2() {
 		return connector2;
 	}
+
+	public void setCommandFactory(ReactionCommandFactory commandFactory) {
+		this.commandFactory = commandFactory;
+	}
+
+	public ReactionCommandFactory getCommandFactory() {
+		return commandFactory;
+	}
 	
+	public boolean isStop() {
+		return stop;
+	}
+	
+	public void setStop(boolean stop) {
+		this.stop = stop;
+	}
 }
