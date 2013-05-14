@@ -20,16 +20,12 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-
-import ru.cinimex.client.ClientController;
 import ru.cinimex.data.Field;
-import ru.cinimex.data.Header;
-import ru.cinimex.data.Message;
 import ru.cinimex.data.Point;
 import ru.cinimex.data.TypeCell;
 import ru.cinimex.data.TypeField;
 
-public class View extends JFrame {
+public abstract class View extends JFrame {
 	private static final long serialVersionUID = 7308962792053719857L;
 	public static final int DEFAULT_HEIGHT = 400;
 	public static final int DEFAULT_WIDTH = 500;
@@ -54,21 +50,21 @@ public class View extends JFrame {
 		new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 	};
 	private Point lastStroke;
-	private final ClientController controller;
-	private final LogComponent log;
+//	protected final ClientController controller;
+	protected final LogComponent log;
 	private final Panel panelTable;
 	private final Panel panelOpponentTable;
 	private JButton startButton;
 	private JButton endButton;
 	
 	@SuppressWarnings("serial")
-	public View(ClientController clientController) {
+	public View() {
 		setLookAndFeel();
 		setTitle(DEFAULT_TITLE);
 		setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 		hideFavicone();
 		log = new LogComponent();
-		controller = clientController;
+//		controller = clientController;
 		startButton = new JButton(TITLE_START_BUTTON);
 		endButton = new JButton(TITLE_LOSE_BUTTON);
 		
@@ -192,18 +188,6 @@ public class View extends JFrame {
 		return managePanel;
 	}
 	
-	protected void onclickStart(final String url, final String port) {
-		controller.reactionOnStart(url, port);
-	}
-	
-	protected void onclickLoosing() {
-		controller.send(new Message(Header.TKO_LOSE, null));
-		controller.close();
-		log.println("By your command of the fleet " +
-				"retreats.\nThe battle was lost!\n");
-		switchToEndGame();
-	}
-	
 	protected void onclickToField(Point point) {
 		if (panelOpponentTable.isVisible()) {
 			return;
@@ -281,4 +265,7 @@ public class View extends JFrame {
 	public void println(String text) {
 		log.println(text);
 	}
+	
+	protected abstract void onclickStart(final String url, final String port);
+	protected abstract void onclickLoosing();
 }

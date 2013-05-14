@@ -36,10 +36,20 @@ public class ClientControllerTest extends TestCase {
 		controller = new ClientController();
 		spyController = spy(controller);
 		mockConnector = mock(Connector.class);
-		View mockView = spy(new View(controller));
+		View mockView = spy(new View() {
+			private static final long serialVersionUID = -8704363206343707533L;
+			@Override
+			protected void onclickStart(String url, String port) {
+				
+			}
+			@Override
+			protected void onclickLoosing() {
+				
+			}
+		});
 		when(spyController.getView()).thenReturn(mockView);
 	}
-
+	
 	@After
 	public void tearDown() throws Exception {
 	}

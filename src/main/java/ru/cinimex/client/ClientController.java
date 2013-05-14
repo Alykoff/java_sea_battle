@@ -33,7 +33,24 @@ public class ClientController {
 	}
 	
 	public void startClient() {
-		setView(new View(this));
+		final ClientController controller = this;
+		setView(new View() {
+			private static final long serialVersionUID = -5275030778037759937L;
+			
+			@Override
+			protected void onclickStart(final String url, final String port) {
+				controller.reactionOnStart(url, port);
+			}
+			
+			@Override
+			protected void onclickLoosing() {
+				controller.send(new Message(Header.TKO_LOSE, null));
+				controller.close();
+				log.println("By your command of the fleet " +
+						"retreats.\nThe battle was lost!\n");
+				switchToEndGame();
+			}
+		});
 		this.view.setVisible(true);
 	}
 	
