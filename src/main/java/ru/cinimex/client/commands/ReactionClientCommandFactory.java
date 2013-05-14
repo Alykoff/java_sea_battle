@@ -20,6 +20,7 @@ public class ReactionClientCommandFactory {
 		commands.put(Header.STRIKE, new ReactionOnStrike());
 		commands.put(Header.STROKE, new ReactionOnStroke());
 		commands.put(Header.NOT_STROKE, new ReactionOnNotStroke());
+		commands.put(Header.INIT, new ReactionOnInit());
 	}
 	
 	public ClientReactionCommand getCommand(Header header) {

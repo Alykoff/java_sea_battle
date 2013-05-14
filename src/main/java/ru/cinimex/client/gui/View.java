@@ -75,7 +75,7 @@ public abstract class View extends JFrame {
 			}
 		};
 		panelTable.setField(DEFAULT_FIELD);// TODO test.
-
+		
 		panelOpponentTable = new Panel(TITLE_OPPONENT_FIELD_PANEL) {
 			private static final long serialVersionUID = -5972736539712850752L;
 			@Override
@@ -84,7 +84,7 @@ public abstract class View extends JFrame {
 			}
 		};
 		panelOpponentTable.setVisible(false);
-
+		
 		addComponents();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		locationInCenterMonitor(this);
@@ -130,7 +130,7 @@ public abstract class View extends JFrame {
 			(screenHeight - component.getHeight()) / 2
 		);
 	}
-
+	
 	protected void addComponents() {
 		JPanel panel = new JPanel();
 		JPanel managePanel = createManagePanel();
@@ -200,8 +200,10 @@ public abstract class View extends JFrame {
 		}
 	}
 	
-	protected void onclickToOpponentField(Point point) {
-		if (lastStroke == null || point == null) {
+	protected void onclickToOpponentField(Point point) {// XXX write last stroke
+		TypeCell cellCode = getCell(point, TypeField.OPPONENT);
+		System.out.println(cellCode.toString());
+		if (cellCode.equals(TypeCell.WATER) && lastStroke == null) {
 			lastStroke = point;
 		}
 	}
