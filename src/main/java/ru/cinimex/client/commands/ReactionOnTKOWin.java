@@ -13,7 +13,7 @@ import ru.cinimex.server.EndGameException;
 public class ReactionOnTKOWin extends ClientReactionCommand {
 
 	@Override
-	public boolean execute(BodyMessage body, View view, Connector connector,
+	public void execute(BodyMessage body, View view, Connector connector,
 			ClientData data) {
 		view.println(
 				"Congratulations! You win! You " +

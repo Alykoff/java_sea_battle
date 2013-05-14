@@ -13,7 +13,7 @@ import ru.cinimex.server.EndGameException;
 public class ReactionOnLose extends ClientReactionCommand {
 
 	@Override
-	public boolean execute(BodyMessage body, View view, Connector connector,
+	public void execute(BodyMessage body, View view, Connector connector,
 			ClientData data) {
 		view.println("Oh! We lose!");
 		throw new EndGameException();

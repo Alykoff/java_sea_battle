@@ -16,7 +16,7 @@ import ru.cinimex.server.EndGameException;
 public class ReactionOnBigBang extends ClientReactionCommand {
 
 	@Override
-	public boolean execute(BodyMessage body, View view, Connector connector,
+	public void execute(BodyMessage body, View view, Connector connector,
 			ClientData data) {
 		
 		final Point stroke = view.getLastStroke();
@@ -32,8 +32,6 @@ public class ReactionOnBigBang extends ClientReactionCommand {
 		view.println("Yeeh! You blew up this ship!");
 		view.cleanLastStroke();
 		sendStroke(view, data, connector);
-//		waitAndReactionToStroke();
-		return false;
 	}
 
 }

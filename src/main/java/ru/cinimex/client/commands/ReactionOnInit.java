@@ -12,9 +12,8 @@ import ru.cinimex.data.ClientData;
 public class ReactionOnInit extends ClientReactionCommand {
 
 	@Override
-	public boolean execute(BodyMessage body, View view, Connector connector,
+	public void execute(BodyMessage body, View view, Connector connector,
 			ClientData data) {
-		return false;
 	}
 
 }

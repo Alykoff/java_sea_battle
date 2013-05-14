@@ -16,7 +16,7 @@ import ru.cinimex.server.EndGameException;
 public class ReactionOnStrike extends ClientReactionCommand {
 
 	@Override
-	public boolean execute(BodyMessage body, View view, Connector connector,
+	public void execute(BodyMessage body, View view, Connector connector,
 			ClientData data) {
 		
 		final Point stroke = view.getLastStroke();
@@ -24,15 +24,11 @@ public class ReactionOnStrike extends ClientReactionCommand {
 			view.println("Upps! We have problem! " +
 					"Sorry. End game(");
 			throw new EndGameException();
-//			interrupt = true;
-//			endGame();
 		}
 		view.setCell(stroke, TypeCell.STRIKE, TypeField.OPPONENT);
 		view.println("Good shot!");
 		view.cleanLastStroke();
 		sendStroke(view, data, connector);
-//		waitAndReactionToStroke();
-		return false;
 	}
 
 }

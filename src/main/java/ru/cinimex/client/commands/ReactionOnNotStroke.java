@@ -18,7 +18,7 @@ import ru.cinimex.server.FieldLogic;
 public class ReactionOnNotStroke extends ClientReactionCommand {
 
 	@Override
-	public boolean execute(BodyMessage body, View view, Connector connector,
+	public void execute(BodyMessage body, View view, Connector connector,
 			ClientData data) {
 		
 		view.println("Please wait for the opponent's turn.");
@@ -29,7 +29,6 @@ public class ReactionOnNotStroke extends ClientReactionCommand {
 		} else if (view.getLastStroke() != null) {
 			reactionOnMiss(view);
 		}
-		return false;
 	}
 	
 	protected void reactionOnHitInOurShip(View view, Point point) {

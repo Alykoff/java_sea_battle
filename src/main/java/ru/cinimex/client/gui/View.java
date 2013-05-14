@@ -64,7 +64,6 @@ public abstract class View extends JFrame {
 		setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 		hideFavicone();
 		log = new LogComponent();
-//		controller = clientController;
 		startButton = new JButton(TITLE_START_BUTTON);
 		endButton = new JButton(TITLE_LOSE_BUTTON);
 		
@@ -200,9 +199,8 @@ public abstract class View extends JFrame {
 		}
 	}
 	
-	protected void onclickToOpponentField(Point point) {// XXX write last stroke
+	protected void onclickToOpponentField(Point point) {
 		TypeCell cellCode = getCell(point, TypeField.OPPONENT);
-		System.out.println(cellCode.toString());
 		if (cellCode.equals(TypeCell.WATER) && lastStroke == null) {
 			lastStroke = point;
 		}

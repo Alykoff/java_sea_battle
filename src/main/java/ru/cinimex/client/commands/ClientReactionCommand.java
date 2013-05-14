@@ -23,16 +23,17 @@ import ru.cinimex.server.EndGameException;
 public abstract class ClientReactionCommand {
 	protected final int MAX_TIME_STROKE = 3 * 60 * 1000;
 	
-	abstract public boolean execute(BodyMessage body, View view, Connector connector, ClientData data);
+	abstract public void execute(BodyMessage body, View view, 
+							Connector connector, ClientData data);
 	
-	protected Point waitAndReactionToStroke(View view, ClientData data, Connector connector) {
+	protected Point waitAndReactionToStroke(View view, ClientData data, 
+													Connector connector) {
 		long beginTime = new Date().getTime();
 		data.setState(ClientState.STROKE);
 		view.cleanLastStroke();
 		while (view.getLastStroke() == null) {
 			if ((beginTime + MAX_TIME_STROKE) < new Date().getTime()) {
 				view.println("Your time is over. You lose.");
-//				interrupt = true;
 				throw new EndGameException();
 			}
 			try {
@@ -47,8 +48,6 @@ public abstract class ClientReactionCommand {
 		} catch (RuntimeException e) {
 			view.println(e.getMessage());
 			throw new EndGameException();
-//			interrupt = true;
-//			endGame();
 		}
 	}
 	
