@@ -80,7 +80,7 @@ public class TestServerController extends TestCase {
 		activeClient2 = activeClient1.clone();
 		activeClient3 = activeClient1.clone();
 		activeClient4 = activeClient1.clone();
-
+		
 		notActiveClient1 = new ClientData(ClientState.WAIT_STROKE);
 		notActiveClient1.setField(validInitField1);
 		notActiveClient2 = activeClient1.clone();
@@ -111,14 +111,14 @@ public class TestServerController extends TestCase {
 		
 		mockConnectorMiss = mock(Connector.class);
 		when(mockConnectorMiss.recieve()).thenReturn(missStrokeMsg);
-	
+		
 		mockConnectorBigBang = mock(Connector.class);
 		when(mockConnectorBigBang.recieve()).thenReturn(bigBangMsg);
 		
 		mockConnectorLose = mock(Connector.class);
 		when(mockConnectorLose.recieve()).thenReturn(winStrokeMsg);
 	}
-
+	
 	@After
 	public void tearDown() throws Exception {
 	}
