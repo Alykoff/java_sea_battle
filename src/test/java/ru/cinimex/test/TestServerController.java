@@ -5,6 +5,7 @@
 package ru.cinimex.test;
 
 import java.io.IOException;
+
 import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -19,6 +20,7 @@ import ru.cinimex.data.Message;
 import ru.cinimex.data.Point;
 import ru.cinimex.data.TypeCell;
 import ru.cinimex.server.ServerController;
+import ru.cinimex.server.ServerMessages;
 import ru.cinimex.server.commands.ReactionCommandFactory;
 import static org.mockito.Mockito.*;
 
@@ -26,9 +28,14 @@ import static org.mockito.Mockito.*;
 public class TestServerController extends TestCase {
 	int s, w, t, b, m;
 	ClientData nullClient, notConnectClient,
-		activeClient, notActiveClient;
-	Message validInitMsg, validStrokeMsg;
+		activeClient1, notActiveClient1,
+		activeClient2, notActiveClient2,
+		activeClient3, notActiveClient3;
+	Message validInitMsg, strikeStrokeMsg, missStrokeMsg,
+		bigBangMsg;
 	ReactionCommandFactory serverCommandFactory;
+	Connector mockConnectorStrike, mockConnectorMiss, mockConnectorBigBang;
+	Point strikePoint, missPoint, bigBangPoint;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -54,17 +61,37 @@ public class TestServerController extends TestCase {
 		FieldInMessage validFieldInMsg1 = new FieldInMessage(validInitField1);
 		validInitMsg = new ClientMessages().getInit(validFieldInMsg1);
 		
-		Point point = new Point(0, 0);
-		validStrokeMsg = new ClientMessages().getStroke(point);
+		strikePoint = new Point(0, 0);
+		strikeStrokeMsg = new ClientMessages().getStroke(strikePoint);
 		
-		activeClient = new ClientData(ClientState.STROKE);
-		activeClient.setField(validInitField1);
-		notActiveClient = new ClientData(ClientState.WAIT_STROKE);
-		notActiveClient.setField(validInitField1);
+		missPoint = new Point(1, 0);
+		missStrokeMsg = new ClientMessages().getStroke(missPoint);
+		
+		bigBangPoint = new Point(6, 0);
+		bigBangMsg = new ClientMessages().getStroke(bigBangPoint);
+		
+		activeClient1 = new ClientData(ClientState.STROKE);
+		activeClient1.setField(validInitField1);
+		activeClient2 = activeClient1.clone();
+		activeClient3 = activeClient1.clone();
+		
+		notActiveClient1 = new ClientData(ClientState.WAIT_STROKE);
+		notActiveClient1.setField(validInitField1);
+		notActiveClient2 = activeClient1.clone();
+		notActiveClient3 = activeClient1.clone();
+		
 		notConnectClient = new ClientData(ClientState.NOT_CONNECT);
 		nullClient = null;
-		
 		serverCommandFactory = new ReactionCommandFactory();
+		
+		mockConnectorStrike = mock(Connector.class);
+		when(mockConnectorStrike.recieve()).thenReturn(strikeStrokeMsg);
+		
+		mockConnectorMiss = mock(Connector.class);
+		when(mockConnectorMiss.recieve()).thenReturn(missStrokeMsg);
+	
+		mockConnectorBigBang = mock(Connector.class);
+		when(mockConnectorBigBang.recieve()).thenReturn(bigBangMsg);
 	}
 
 	@After
@@ -72,25 +99,69 @@ public class TestServerController extends TestCase {
 	}
 	
 	@Test
-	public void testValidInitMsg() throws ClassCastException, IOException, ClassNotFoundException {
+	public void testStrike() {
 		ServerController controller = new ServerController();
 		ServerController spyController = spy(controller);
 		
-		Connector mockConnector = mock(Connector.class);
-		when(mockConnector.recieve()).thenReturn(validStrokeMsg);
-		
-		when(spyController.getConnector1()).thenReturn(mockConnector);
-		when(spyController.getConnector2()).thenReturn(mockConnector);
-		
-		when(spyController.getClient1()).thenReturn(activeClient);
-		when(spyController.getClient2()).thenReturn(notActiveClient);
+		when(spyController.getConnector1()).thenReturn(mockConnectorStrike);
+		when(spyController.getConnector2()).thenReturn(mockConnectorStrike);
+		when(spyController.getClient1()).thenReturn(activeClient1);
+		when(spyController.getClient2()).thenReturn(notActiveClient1);
 		when(spyController.isEndGame()).thenReturn(true);
 		when(spyController.isStop()).thenReturn(true);
 		when(spyController.getCommandFactory()).thenReturn(serverCommandFactory);
 		
 		spyController.startServer();
 		
-		assertTrue(notActiveClient.getField().getCell(0, 0) == TypeCell.STRIKE.ordinal());
+		int x = strikePoint.getX();
+		int y = strikePoint.getY();
+		assertTrue(notActiveClient1.getField().getCell(x, y) == TypeCell.STRIKE.ordinal());
+		controller.close();
+	}
+	
+	@Test
+	public void testMiss() throws IOException {
+		ServerController controller = new ServerController();
+		ServerController spyController = spy(controller);
+		
+		when(spyController.getConnector1()).thenReturn(mockConnectorMiss);
+		when(spyController.getConnector2()).thenReturn(mockConnectorMiss);
+		when(spyController.getClient1()).thenReturn(activeClient2);
+		when(spyController.getClient2()).thenReturn(notActiveClient2);
+		when(spyController.isEndGame()).thenReturn(true);
+		when(spyController.isStop()).thenReturn(true);
+		when(spyController.getCommandFactory()).thenReturn(serverCommandFactory);
+		
+		spyController.startServer();
+		
+		int x = missPoint.getX();
+		int y = missPoint.getY();
+		assertTrue(notActiveClient2.getField().getCell(x, y) == TypeCell.WATER.ordinal());
+		verify(mockConnectorMiss, times(1)).send(ServerMessages.getStrokeMsg(missPoint));
+//		verify(mockConnectorMiss, times(2)).send(ServerMessages.getMiss());
+		controller.close();
+	}
+	
+	@Test
+	public void testBigBang() throws IOException {
+		ServerController controller = new ServerController();
+		ServerController spyController = spy(controller);
+		
+		when(spyController.getConnector1()).thenReturn(mockConnectorBigBang);
+		when(spyController.getConnector2()).thenReturn(mockConnectorBigBang);
+		when(spyController.getClient1()).thenReturn(activeClient3);
+		when(spyController.getClient2()).thenReturn(notActiveClient3);
+		when(spyController.isEndGame()).thenReturn(true);
+		when(spyController.isStop()).thenReturn(true);
+		when(spyController.getCommandFactory()).thenReturn(serverCommandFactory);
+		
+		spyController.startServer();
+		
+		int x = bigBangPoint.getX();
+		int y = bigBangPoint.getY();
+		assertTrue(notActiveClient3.getField().getCell(x, y) == TypeCell.STRIKE.ordinal());
+		verify(mockConnectorBigBang, times(1)).send(ServerMessages.getBigBang());
+		verify(mockConnectorBigBang, times(1)).send(ServerMessages.getNotStrokeMsg(bigBangPoint));
 		controller.close();
 	}
 	

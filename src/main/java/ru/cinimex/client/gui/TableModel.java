@@ -61,10 +61,6 @@ public class TableModel extends AbstractTableModel {
 		return editingFlag;
 	}
 	
-	public int getId() {
-		return data.getId();
-	}
-	
 	public Field getField() {
 		return data.getField();
 	}

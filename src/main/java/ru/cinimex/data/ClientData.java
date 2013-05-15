@@ -6,8 +6,7 @@ package ru.cinimex.data;
 
 import java.util.Date;
 
-public class ClientData {
-	protected int id;
+public class ClientData implements Cloneable {
 	protected Field field = new Field();
 	protected ClientState state;
 	protected long dateLastMsg;
@@ -17,7 +16,6 @@ public class ClientData {
 			throw new RuntimeException();
 		}
 		this.setState(state);
-		this.setId(id);
 		setDateLastMsg(new Date().getTime());
 	}
 	
@@ -28,35 +26,27 @@ public class ClientData {
 		}
 		this.field = field;
 	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public int getId() {
-		return id;
-	}
-
+	
 	public void setField(Field field) {
 		this.field = field;
 	}
-
+	
 	public Field getField() {
 		return field;
 	}
-
+	
 	public void setState(ClientState state) {
 		this.state = state;
 	}
-
+	
 	public ClientState getState() {
 		return state;
 	}
-
+	
 	public void setDateLastMsg(long dateLastMsg) {
 		this.dateLastMsg = dateLastMsg;
 	}
-
+	
 	public long getDateLastMsg() {
 		return dateLastMsg;
 	}
@@ -71,6 +61,14 @@ public class ClientData {
 			return false;
 		}
 		return true;
+	}
+	
+	@Override
+	public ClientData clone() {
+		ClientData newClient = new ClientData(this.getState());
+		newClient.setDateLastMsg(this.getDateLastMsg());
+		newClient.setField(this.getField().clone());
+		return newClient;
 	}
 	
 }
