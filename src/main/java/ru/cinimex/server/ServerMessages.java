@@ -33,17 +33,12 @@ public class ServerMessages {
 		return new Message(Header.NOT_STROKE, null);
 	}
 	
-	public static Message getNotStrokeMsg(Point point) {
-		if (point == null) {
-			throw new NullPointerException();
-		}
-		return new Message(Header.NOT_STROKE, point);
-	}
-	
-	@Deprecated
-	public static Message getBadStrokeMsg() {
-		return new Message(Header.BAD_STROKE, null);
-	}
+//	public static Message getNotStrokeMsg(Point point) {
+//		if (point == null) {
+//			throw new NullPointerException();
+//		}
+//		return new Message(Header.NOT_STROKE, point);
+//	}
 	
 	public static Message getTKOWin() {
 		return new Message(Header.TKO_WIN, null);

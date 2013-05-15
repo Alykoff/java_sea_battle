@@ -78,9 +78,9 @@ public class TestServerMessages {
 		assertNull(msg1.getBody());
 		
 		Point point = new Point();
-		Message msg2 = getNotStrokeMsg(point);
+		Message msg2 = getNotStroke(point);
 		try {
-			getNotStrokeMsg(null);
+			getNotStroke(null);
 			fail("null test fail");
 		} catch (NullPointerException e) {
 			// not tracing

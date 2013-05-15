@@ -30,12 +30,14 @@ public class TestServerController extends TestCase {
 	ClientData nullClient, notConnectClient,
 		activeClient1, notActiveClient1,
 		activeClient2, notActiveClient2,
-		activeClient3, notActiveClient3;
+		activeClient3, notActiveClient3,
+		activeClient4, losingClient;
 	Message validInitMsg, strikeStrokeMsg, missStrokeMsg,
-		bigBangMsg;
+		bigBangMsg, winStrokeMsg;
 	ReactionCommandFactory serverCommandFactory;
-	Connector mockConnectorStrike, mockConnectorMiss, mockConnectorBigBang;
-	Point strikePoint, missPoint, bigBangPoint;
+	Connector mockConnectorStrike, mockConnectorMiss, 
+		mockConnectorBigBang, mockConnectorLose;
+	Point strikePoint, missPoint, bigBangPoint, losingPoint;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -70,15 +72,35 @@ public class TestServerController extends TestCase {
 		bigBangPoint = new Point(6, 0);
 		bigBangMsg = new ClientMessages().getStroke(bigBangPoint);
 		
+		losingPoint = new Point(0, 0);
+		winStrokeMsg = new ClientMessages().getStroke(losingPoint);
+		
 		activeClient1 = new ClientData(ClientState.STROKE);
 		activeClient1.setField(validInitField1);
 		activeClient2 = activeClient1.clone();
 		activeClient3 = activeClient1.clone();
-		
+		activeClient4 = activeClient1.clone();
+
 		notActiveClient1 = new ClientData(ClientState.WAIT_STROKE);
 		notActiveClient1.setField(validInitField1);
 		notActiveClient2 = activeClient1.clone();
 		notActiveClient3 = activeClient1.clone();
+		int[][] losingData1 = new int[][] {
+				new int[] {s, t, t, t, w, t, t, t, w, w},
+				new int[] {w, w, w, w, w, w, w, w, w, w},
+				new int[] {t, t, t, w, t, t, w, t, t, w},
+				new int[] {w, w, w, w, w, w, w, w, w, w},
+				new int[] {t, t, w, w, w, w, t, w, t, w},
+				new int[] {w, w, w, w, w, w, w, w, w, w},
+				new int[] {t, w, t, w, w, w, w, w, w, w},
+				new int[] {w, w, w, w, w, w, w, w, w, w},
+				new int[] {w, w, w, w, w, w, w, w, w, w},
+				new int[] {w, w, w, w, w, w, w, w, w, w}
+		};
+		Field losingField1 = new Field(losingData1);
+		losingClient = new ClientData(ClientState.WAIT_STROKE);
+		losingClient.setField(losingField1);
+		
 		
 		notConnectClient = new ClientData(ClientState.NOT_CONNECT);
 		nullClient = null;
@@ -92,6 +114,9 @@ public class TestServerController extends TestCase {
 	
 		mockConnectorBigBang = mock(Connector.class);
 		when(mockConnectorBigBang.recieve()).thenReturn(bigBangMsg);
+		
+		mockConnectorLose = mock(Connector.class);
+		when(mockConnectorLose.recieve()).thenReturn(winStrokeMsg);
 	}
 
 	@After
@@ -99,7 +124,7 @@ public class TestServerController extends TestCase {
 	}
 	
 	@Test
-	public void testStrike() {
+	public void testStrike() throws IOException {
 		ServerController controller = new ServerController();
 		ServerController spyController = spy(controller);
 		
@@ -115,7 +140,10 @@ public class TestServerController extends TestCase {
 		
 		int x = strikePoint.getX();
 		int y = strikePoint.getY();
-		assertTrue(notActiveClient1.getField().getCell(x, y) == TypeCell.STRIKE.ordinal());
+		int strikeCell = t;
+		assertTrue(notActiveClient1.getField().getCell(x, y) == strikeCell);
+		verify(mockConnectorStrike, times(1)).send(ServerMessages.getStrike());
+		verify(mockConnectorStrike, times(1)).send(ServerMessages.getNotStroke(strikePoint));
 		controller.close();
 	}
 	
@@ -136,9 +164,10 @@ public class TestServerController extends TestCase {
 		
 		int x = missPoint.getX();
 		int y = missPoint.getY();
-		assertTrue(notActiveClient2.getField().getCell(x, y) == TypeCell.WATER.ordinal());
+		int waterCell = w;
+		assertTrue(notActiveClient2.getField().getCell(x, y) == waterCell);
 		verify(mockConnectorMiss, times(1)).send(ServerMessages.getStrokeMsg(missPoint));
-//		verify(mockConnectorMiss, times(2)).send(ServerMessages.getMiss());
+		verify(mockConnectorMiss, times(2)).send(ServerMessages.getNotStrokeMsg());
 		controller.close();
 	}
 	
@@ -159,12 +188,32 @@ public class TestServerController extends TestCase {
 		
 		int x = bigBangPoint.getX();
 		int y = bigBangPoint.getY();
-		assertTrue(notActiveClient3.getField().getCell(x, y) == TypeCell.STRIKE.ordinal());
+		int strikeCell = t;
+		assertTrue(notActiveClient3.getField().getCell(x, y) == strikeCell);
 		verify(mockConnectorBigBang, times(1)).send(ServerMessages.getBigBang());
-		verify(mockConnectorBigBang, times(1)).send(ServerMessages.getNotStrokeMsg(bigBangPoint));
+		verify(mockConnectorBigBang, times(1)).send(ServerMessages.getNotStroke(bigBangPoint));
 		controller.close();
 	}
 	
+	@Test 
+	public void testWinStroke() throws IOException {
+		ServerController controller = new ServerController();
+		ServerController spyController = spy(controller);
+		
+		when(spyController.getConnector1()).thenReturn(mockConnectorLose);
+		when(spyController.getConnector2()).thenReturn(mockConnectorLose);
+		when(spyController.getClient1()).thenReturn(activeClient4);
+		when(spyController.getClient2()).thenReturn(losingClient);
+		when(spyController.isEndGame()).thenReturn(true);
+		when(spyController.isStop()).thenReturn(true);
+		when(spyController.getCommandFactory()).thenReturn(serverCommandFactory);
+		
+		spyController.startServer();
+		
+		verify(mockConnectorLose, times(1)).send(ServerMessages.getWin());
+		verify(mockConnectorLose, times(1)).send(ServerMessages.getLoose(losingPoint));
+		controller.close();
+	}
 /*
 	@Test
 	public void testIsValidInit() {
