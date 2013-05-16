@@ -39,7 +39,7 @@ public class Connector {
 		objOutputStream = new ObjectOutputStream(outputStream);
 		objOutputStream.writeObject(msg);
 		
-		System.out.println("===================================");
+		System.out.println("================================");
 	}
 	
 	public Message recieve() throws IOException, ClassNotFoundException, ClassCastException {
@@ -49,13 +49,12 @@ public class Connector {
 		
 		InputStream inputStream = null;
 		ObjectInputStream objInputStream = null;
-		System.out.println(socket.isClosed() + " " + new java.util.Date().toString());
 		inputStream = socket.getInputStream();
 		objInputStream = new ObjectInputStream(inputStream);
 		
 		Message msg = (Message) objInputStream.readObject();
 		System.out.println(msg.toString());
-		System.out.println("===================================");
+		System.out.println("================================");
 		
 		return msg;		
 	}
