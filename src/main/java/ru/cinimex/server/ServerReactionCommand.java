@@ -2,7 +2,7 @@
  * @author Alykov Gali
  * @date 08.05.2013
  */
-package ru.cinimex.server.commands;
+package ru.cinimex.server;
 
 import static ru.cinimex.server.FieldLogic.isBigBang;
 import static ru.cinimex.server.FieldLogic.isStrike;
@@ -18,9 +18,6 @@ import ru.cinimex.data.Header;
 import ru.cinimex.data.Message;
 import ru.cinimex.data.Point;
 import ru.cinimex.data.TypeCell;
-import ru.cinimex.server.EndGameException;
-import ru.cinimex.server.ServerMessageValidator;
-import ru.cinimex.server.ServerMessages;
 
 public class ServerReactionCommand {
 	private ServerMessageValidator msgValidator = new ServerMessageValidator();

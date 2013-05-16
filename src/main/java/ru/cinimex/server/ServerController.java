@@ -13,8 +13,6 @@ import ru.cinimex.data.ClientState;
 import ru.cinimex.data.Field;
 import ru.cinimex.data.FieldInMessage;
 import ru.cinimex.data.Message;
-import ru.cinimex.server.commands.ReactionCommandFactory;
-import ru.cinimex.server.commands.ServerReactionCommand;
 
 public class ServerController {
 	private ClientData client1;
@@ -25,7 +23,6 @@ public class ServerController {
 	private boolean endGame;
 	private ServerMessageValidator msgValidator = new ServerMessageValidator();
 	private SelectorClientsAndConnectors selector = new SelectorClientsAndConnectors();
-	private ReactionCommandFactory commandFactory = new ReactionCommandFactory();
 	private boolean stop;
 	public static final int SERVER_PORT = 9000;
 	
@@ -223,14 +220,6 @@ public class ServerController {
 	
 	public Connector getConnector2() {
 		return connector2;
-	}
-
-	public void setCommandFactory(ReactionCommandFactory commandFactory) {
-		this.commandFactory = commandFactory;
-	}
-
-	public ReactionCommandFactory getCommandFactory() {
-		return commandFactory;
 	}
 	
 	public boolean isStop() {

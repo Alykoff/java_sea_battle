@@ -22,10 +22,9 @@ import ru.cinimex.data.Point;
 import ru.cinimex.data.TypeCell;
 import ru.cinimex.server.ServerController;
 import ru.cinimex.server.ServerMessages;
-import ru.cinimex.server.commands.ReactionCommandFactory;
 import static org.mockito.Mockito.*;
 
- @Ignore
+// @Ignore
 public class TestServerController extends TestCase {
 	int s, w, t, b, m;
 	ClientData nullClient, notConnectClient,
@@ -35,7 +34,7 @@ public class TestServerController extends TestCase {
 		activeClient4, losingClient;
 	Message validInitMsg, strikeStrokeMsg, missStrokeMsg,
 		bigBangMsg, winStrokeMsg;
-	ReactionCommandFactory serverCommandFactory;
+//	ReactionCommandFactory serverCommandFactory;
 	Connector mockConnectorStrike, mockConnectorMiss, 
 		mockConnectorBigBang, mockConnectorLose;
 	Point strikePoint, missPoint, bigBangPoint, losingPoint;
@@ -105,7 +104,7 @@ public class TestServerController extends TestCase {
 		
 		notConnectClient = new ClientData(ClientState.NOT_CONNECT);
 		nullClient = null;
-		serverCommandFactory = new ReactionCommandFactory();
+//		serverCommandFactory = new ReactionCommandFactory();
 		
 		mockConnectorStrike = mock(Connector.class);
 		when(mockConnectorStrike.recieve()).thenReturn(strikeStrokeMsg);
@@ -135,7 +134,7 @@ public class TestServerController extends TestCase {
 		when(spyController.getClient2()).thenReturn(notActiveClient1);
 		when(spyController.isEndGame()).thenReturn(true);
 		when(spyController.isStop()).thenReturn(true);
-		when(spyController.getCommandFactory()).thenReturn(serverCommandFactory);
+//		when(spyController.getCommandFactory()).thenReturn(serverCommandFactory);
 		
 		spyController.startServer();
 		
@@ -159,7 +158,7 @@ public class TestServerController extends TestCase {
 		when(spyController.getClient2()).thenReturn(notActiveClient2);
 		when(spyController.isEndGame()).thenReturn(true);
 		when(spyController.isStop()).thenReturn(true);
-		when(spyController.getCommandFactory()).thenReturn(serverCommandFactory);
+//		when(spyController.getCommandFactory()).thenReturn(serverCommandFactory);
 		
 		spyController.startServer();
 		
@@ -183,7 +182,7 @@ public class TestServerController extends TestCase {
 		when(spyController.getClient2()).thenReturn(notActiveClient3);
 		when(spyController.isEndGame()).thenReturn(true);
 		when(spyController.isStop()).thenReturn(true);
-		when(spyController.getCommandFactory()).thenReturn(serverCommandFactory);
+//		when(spyController.getCommandFactory()).thenReturn(serverCommandFactory);
 		
 		spyController.startServer();
 		
@@ -207,7 +206,7 @@ public class TestServerController extends TestCase {
 		when(spyController.getClient2()).thenReturn(losingClient);
 		when(spyController.isEndGame()).thenReturn(true);
 		when(spyController.isStop()).thenReturn(true);
-		when(spyController.getCommandFactory()).thenReturn(serverCommandFactory);
+//		when(spyController.getCommandFactory()).thenReturn(serverCommandFactory);
 		
 		spyController.startServer();
 		

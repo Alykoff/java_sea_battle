@@ -11,13 +11,11 @@ import ru.cinimex.connector.Connector;
 import ru.cinimex.data.BodyMessage;
 import ru.cinimex.data.ClientData;
 import ru.cinimex.data.ClientState;
-import ru.cinimex.data.Field;
 import ru.cinimex.data.Header;
 import ru.cinimex.data.Point;
 import ru.cinimex.data.TypeCell;
 import ru.cinimex.data.TypeField;
 import ru.cinimex.server.EndGameException;
-import ru.cinimex.server.FieldLogic;
 
 public class ReactionClientCommandFactory {
 	HashMap<Header, ClientReactionCommand> commands;
