@@ -8,11 +8,17 @@ import java.io.IOException;
 
 import ru.cinimex.connector.Connector;
 import ru.cinimex.data.ClientData;
+import ru.cinimex.data.Field;
 import ru.cinimex.data.Message;
 import ru.cinimex.server.EndGameException;
 import ru.cinimex.server.ServerMessages;
 
 public class ReactionOnInvalidMsg extends ServerReactionCommand {
+
+	public ReactionOnInvalidMsg(Field notActiveField, Message msg) {
+		super(notActiveField, msg);
+		// TODO Auto-generated constructor stub
+	}
 
 	@Override
 	public boolean execute(ClientData activeClient, Connector activeConnector,

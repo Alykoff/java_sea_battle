@@ -9,6 +9,7 @@ import java.io.IOException;
 import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import ru.cinimex.client.ClientMessages;
 import ru.cinimex.connector.Connector;
@@ -24,7 +25,7 @@ import ru.cinimex.server.ServerMessages;
 import ru.cinimex.server.commands.ReactionCommandFactory;
 import static org.mockito.Mockito.*;
 
-// @Ignore
+ @Ignore
 public class TestServerController extends TestCase {
 	int s, w, t, b, m;
 	ClientData nullClient, notConnectClient,

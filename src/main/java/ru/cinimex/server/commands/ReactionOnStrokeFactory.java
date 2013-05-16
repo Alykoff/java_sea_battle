@@ -11,18 +11,18 @@ import ru.cinimex.data.Field;
 import ru.cinimex.data.Point;
 
 public class ReactionOnStrokeFactory {
-	public ReactionOnStroke getStrokeCommand(Field notActiveField, Point point) {
-		if (notActiveField == null) {
-			throw new NullPointerException("notActiveClient nullpointer.");
-		}
-		if (isWin(notActiveField, point)) {
-			return new ReactionOnWinStroke();
-		} else if (isBigBang(notActiveField, point)) {
-			return new ReactionOnBigBang();
-		} else if (isStrike(notActiveField, point)) {
-			return new ReactionOnStrike();
-		} else {
-			return new ReactionOnMiss();
-		}
-	}
+//	public ReactionOnStroke getStrokeCommand(Field notActiveField, Point point) {
+//		if (notActiveField == null) {
+//			throw new NullPointerException("notActiveClient nullpointer.");
+//		}
+//		if (isWin(notActiveField, point)) {
+//			return new ReactionOnWinStroke();
+//		} else if (isBigBang(notActiveField, point)) {
+//			return new ReactionOnBigBang();
+//		} else if (isStrike(notActiveField, point)) {
+//			return new ReactionOnStrike();
+//		} else {
+//			return new ReactionOnMiss();
+//		}
+//	}
 }

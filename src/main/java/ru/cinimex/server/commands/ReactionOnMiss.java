@@ -13,33 +13,33 @@ import ru.cinimex.data.Point;
 import ru.cinimex.server.EndGameException;
 import ru.cinimex.server.ServerMessages;
 
-public class ReactionOnMiss extends ReactionOnStroke {
-
-	@Override
-	public boolean execute(ClientData activeClient, Connector activeConnector,
-			ClientData notActiveClient, Connector notActiveConnector,
-			Message msg) throws EndGameException, IOException {
-		
-		if (msg == null || 
-				msg.getBody() == null || 
-				!(msg.getBody() instanceof Point)) {
-			try {
-				notActiveConnector.send(ServerMessages.getTKOWin());
-			} catch (SocketException e) {
-				e.printStackTrace();
-			}
-			activeConnector.send(ServerMessages.getTKOLoose());	
-			throw new EndGameException();
-		}
-		Point point = (Point) msg.getBody();
-		try {
-			notActiveConnector.send(ServerMessages.getStrokeMsg(point));
-		} catch (SocketException e) {
-			activeConnector.send(ServerMessages.getTKOWin());
-			throw new EndGameException();
-		}
-		activeConnector.send(ServerMessages.getMiss());
-		return true;
-	}
+public class ReactionOnMiss {//extends ReactionOnStroke {
+//
+//	@Override
+//	public boolean execute(ClientData activeClient, Connector activeConnector,
+//			ClientData notActiveClient, Connector notActiveConnector,
+//			Message msg) throws EndGameException, IOException {
+//		
+//		if (msg == null || 
+//				msg.getBody() == null || 
+//				!(msg.getBody() instanceof Point)) {
+//			try {
+//				notActiveConnector.send(ServerMessages.getTKOWin());
+//			} catch (SocketException e) {
+//				e.printStackTrace();
+//			}
+//			activeConnector.send(ServerMessages.getTKOLoose());	
+//			throw new EndGameException();
+//		}
+//		Point point = (Point) msg.getBody();
+//		try {
+//			notActiveConnector.send(ServerMessages.getStrokeMsg(point));
+//		} catch (SocketException e) {
+//			activeConnector.send(ServerMessages.getTKOWin());
+//			throw new EndGameException();
+//		}
+//		activeConnector.send(ServerMessages.getMiss());
+//		return true;
+//	}
 
 }

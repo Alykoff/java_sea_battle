@@ -145,8 +145,7 @@ public class ServerController {
 		Message message = activeConnector.recieve();
 		
 		Field notActiveField = notActiveClient.getField();
-		ServerReactionCommand command = 
-			getCommandFactory().getReactionCommand(notActiveField, message);
+		ServerReactionCommand command = new ServerReactionCommand(notActiveField, message);
 		boolean isSwitchClient = command.execute(activeClient,
 				activeConnector,
 				notActiveClient,

@@ -114,12 +114,6 @@ public class ReactionClientCommandFactory {
 				view.println("You stroke.");
 				sendStroke(view, data, connector);
 			}
-			
-			protected void reactionOnSuccessfulStroke(View view, Point point) {
-				if (view.getCell(point, TypeField.OUR).equals(TypeCell.WATER)) {
-					view.setCell(point, TypeCell.MISS, TypeField.OUR);
-				}
-			}
 		});
 		commands.put(Header.NOT_STROKE, new ClientReactionCommand() {
 			@Override
@@ -134,25 +128,6 @@ public class ReactionClientCommandFactory {
 				} else if (view.getLastStroke() != null) {
 					reactionOnMiss(view);
 				}
-			}
-			
-			protected void reactionOnHitInOurShip(View view, Point point) {
-				view.println("Hit on our ship!");
-				Field field = view.getField(TypeField.OUR);
-				boolean isBigBang = FieldLogic.isBigBang(field, point);
-				view.setCell(point, TypeCell.STRIKE, TypeField.OUR);
-				if (isBigBang) {
-					paintPaddedShip(view, point, TypeField.OUR);
-				}
-			}
-			
-			protected void reactionOnMiss(View view) {
-				Point stroke = view.getLastStroke();
-				TypeCell typeCellUnderStrokePoint = view.getCell(stroke, TypeField.OPPONENT);
-				if (typeCellUnderStrokePoint.equals(TypeCell.WATER)) {
-					view.setCell(stroke, TypeCell.MISS, TypeField.OPPONENT);
-				}
-				view.cleanLastStroke();
 			}
 		});
 		commands.put(Header.INIT, new ClientReactionCommand() {
